@@ -38,7 +38,7 @@ namespace Books.Controllers
             try
             {
                 user.Login();
-                return Ok(new { id = user.Id, message = "Logged in successfully" });
+                return Ok(new { id = user.Id, message = "Logged in successfully", name = user.Name, isActive = user.IsActive, isAdmin = user.IsAdmin });
             }
             catch (ArgumentException ex)
             {
