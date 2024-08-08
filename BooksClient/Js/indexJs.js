@@ -103,7 +103,7 @@ function insertAuthorsToDB(data) {
     }
     ajaxCall("POST", api, JSON.stringify(authorData), insertAuthorsToDBSCB, insertAuthorsToDBECB)
   })
-  alert("Inserted authors to the data base successfully");
+  //alert("Inserted authors to the data base successfully");
 }
 
 function insertAuthorsToDBSCB(stats) {
@@ -111,9 +111,6 @@ function insertAuthorsToDBSCB(stats) {
 }
 
 function insertAuthorsToDBECB(err) {
-  if (err.stats != 400) {
-    return;
-  }
   console.log(err);
-  alert("Failed to insert the authors to the data base");
+  //alert("Failed to insert the authors to the data base");
 }
