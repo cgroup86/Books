@@ -78,6 +78,7 @@ $(document).ready(function() {
               await fetchAuthorData(author);
           }
           console.log("All author data fetched and stored in array:", authorDataArray);
+          insertAuthorsToDB(authorDataArray);
       }
 
       document.getElementById("fetchAuthorsButton").addEventListener("click", () => {
@@ -85,7 +86,34 @@ $(document).ready(function() {
       });
 
   });
-
-  
-
 });
+
+//------------------------------------------------------------------------
+
+function insertAuthorsToDB(data) {
+  console.log("HI from insert author");
+  let api = `${apiStart}Authors`;
+
+  data.forEach(author => {
+    const authorData = {
+      Name: author.name,
+      TopWork: author.top_work,
+      WorkCount: author.work_count,
+      Key: author.key,
+    }
+    ajaxCall("POST", api, JSON.stringify(authorData), insertAuthorsToDBSCB, insertAuthorsToDBECB)
+  })
+  alert("Inserted authors to the data base successfully");
+}
+
+function insertAuthorsToDBSCB(stats) {
+  console.log(stats);
+}
+
+function insertAuthorsToDBECB(err) {
+  if (err.stats != 400) {
+    return;
+  }
+  console.log(err);
+  alert("Failed to insert the authors to the data base");
+}

@@ -7,7 +7,7 @@ namespace Books.BL
         int id; // Identifier for the book
         string title; // The name of the book
         int price; // Price of the book
-        List<Author> authors; // The names of the authors
+        List<string> authors; // The names of the authors
         string publisher;
         DateTime publishedDate;
         string description;
@@ -42,7 +42,7 @@ namespace Books.BL
         string etag;
         string selfLink;
 
-        public Book(int id, string title, int price, List<Author> authors, string publisher, DateTime publishedDate, string description, bool textReading, int pageCount, List<Category> categories, int averageRating, int ratingsCount, string smallThumbnailUrl, string thumbnailUrl, string language, string previewLink, string infoLink, string canonicalVolumeLink, bool isEbook, bool embeddable, bool epubIsAvailable, string epubDownloadLink, bool pdfIsAvailable, string pdfDownloadLink, string webReaderLink, string googleBooksId, string etag, string selfLink)
+        public Book(int id, string title, int price, List<string> authors, string publisher, DateTime publishedDate, string description, bool textReading, int pageCount, List<Category> categories, int averageRating, int ratingsCount, string smallThumbnailUrl, string thumbnailUrl, string language, string previewLink, string infoLink, string canonicalVolumeLink, bool isEbook, bool embeddable, bool epubIsAvailable, string epubDownloadLink, bool pdfIsAvailable, string pdfDownloadLink, string webReaderLink, string googleBooksId, string etag, string selfLink)
         {
             this.Id = id;
             this.Title = title;
@@ -77,7 +77,7 @@ namespace Books.BL
         public int Id { get => id; set => id = value; }
         public string Title { get => title; set => title = value; }
         public int Price { get => price; set => price = value; }
-        public List<Author> Authors { get => authors; set => authors = value; }
+        public List<string> Authors { get => authors; set => authors = value; }
         public string Publisher { get => publisher; set => publisher = value; }
         public DateTime PublishedDate { get => publishedDate; set => publishedDate = value; }
         public string Description { get => description; set => description = value; }

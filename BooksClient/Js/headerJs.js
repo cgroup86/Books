@@ -1,11 +1,11 @@
 ﻿// TODO - clear the forms when close/ move
 // TODO - when logged in successfully remove the register and show logout button
 // TODO - a 5 second loading page shows at the start of everypage, don't have to be part of the header
-
+const apiStart = `https://localhost:7291/api/`;
 
 // Handles the login/register forms and buttons
 function LoginRegisterModalFunc() {
-  const apiStart = `https://localhost:7291/api/`;
+  
 
   // Email Validation
   $("#registerEmail").on("input", function () {
