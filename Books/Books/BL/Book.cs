@@ -13,7 +13,7 @@ namespace Books.BL
         string description;
         bool textReading; // If book available in text format
         int pageCount; // The number of pages in the book.
-        List<string> categories;
+        List<Category> categories;
         // TODO - check if the rating needed
         int averageRating;
         int ratingsCount;
@@ -35,6 +35,12 @@ namespace Books.BL
         bool pdfIsAvailable;
         string pdfDownloadLink;
         string webReaderLink;
+
+
+        // Id and things on google api books
+        string googleBooksId;
+        string etag;
+        string selfLink;
 
     }
 }
