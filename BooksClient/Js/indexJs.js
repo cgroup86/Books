@@ -64,9 +64,9 @@ $(document).ready(function() {
               if (searchResult.docs && searchResult.docs.length > 0) {
               const authorData = searchResult.docs[0];
               authorDataArray.push(authorData);
-              console.log(`Fetched data for ${authorName}:`, authorData);
+              //console.log(`Fetched data for ${authorName}:`, authorData);
             } else {
-            console.log(`Author ${authorName} not found.`);
+              console.log(`Author ${authorName} not found.`);
             }
           } catch (error) {
               console.error(`Failed to fetch data for author ${authorName}: ${error.message}`);
