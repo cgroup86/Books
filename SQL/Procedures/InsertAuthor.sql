@@ -17,6 +17,6 @@ BEGIN
 	-- SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	INSERT INTO [Authors] ([name], [topWork], [workCount], [key]) VALUES(@name, @topWork, @workCount, @key);
+	INSERT INTO [Authors] ([AuthorName], [topWork], [workCount], [AuthorKey]) VALUES(@name, @topWork, @workCount, @key);
 END
 GO
