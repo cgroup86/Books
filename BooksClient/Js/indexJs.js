@@ -32,6 +32,9 @@ $(document).ready(function() {
       console.log("Unique Author Names:");
       console.log(uniqueAuthors);
 
+
+      
+
       let categorizedBooks = {
           physical: [],
           digital: []
@@ -84,7 +87,6 @@ $(document).ready(function() {
       document.getElementById("fetchAuthorsButton").addEventListener("click", () => {
           fetchAllAuthors(authors);
       });
-
   });
 });
 
