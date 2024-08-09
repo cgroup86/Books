@@ -346,7 +346,7 @@ public class DBservices
             throw (ex);
         }
 
-        cmd = CreateCommandWithStoredProcedureInsertCategory("SP_InsertAuthor", con, category);             // create the command
+        cmd = CreateCommandWithStoredProcedureInsertCategory("SP_InsertCategory", con, category);             // create the command
 
         try
         {
