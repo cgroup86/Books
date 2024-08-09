@@ -5,22 +5,23 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "BooksClient", ".", "{93730F5D-39D0-4441-A10F-9E6A38C83C2C}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8.1"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_60430"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\..\OneDrive\שולחן העבודה\GitHub Projects\Books\BooksClient\"
+		Debug.AspNetCompiler.PhysicalPath = "..\BooksClient\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60430\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.VirtualPath = "/localhost_60430"
-		Release.AspNetCompiler.PhysicalPath = "..\..\..\OneDrive\שולחן העבודה\GitHub Projects\Books\BooksClient\"
+		Release.AspNetCompiler.PhysicalPath = "..\BooksClient\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60430\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "60430"
+		SlnRelativePath = "..\BooksClient\"
 	EndProjectSection
 EndProject
 Global

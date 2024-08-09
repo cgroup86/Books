@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Books.BL;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -6,35 +7,37 @@ namespace Books.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class _ : ControllerBase
+    public class CategoriesController : ControllerBase
     {
-        // GET: api/<_>
+        // GET: api/<CategoriesController>
         [HttpGet]
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<_>/5
+        // GET api/<CategoriesController>/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
         }
 
-        // POST api/<_>
+        // POST api/<CategoriesController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public int Post([FromBody] Category category)
         {
+            //return category.Insert();
+            return 1;
         }
 
-        // PUT api/<_>/5
+        // PUT api/<CategoriesController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<_>/5
+        // DELETE api/<CategoriesController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
