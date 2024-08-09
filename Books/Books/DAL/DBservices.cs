@@ -330,7 +330,7 @@ public class DBservices
     //--------------------------------------------------------------------------------------------------
     // This method insert author to the author table 
     //--------------------------------------------------------------------------------------------------
-    public int insertAuthor(Author author)
+    public int insertCategory(Category category)
     {
 
         SqlConnection con;
@@ -346,7 +346,7 @@ public class DBservices
             throw (ex);
         }
 
-        cmd = CreateCommandWithStoredProcedureInsertInstructor("SP_InsertAuthor", con, author);             // create the command
+        cmd = CreateCommandWithStoredProcedureInsertCategory("SP_InsertAuthor", con, category);             // create the command
 
         try
         {
@@ -373,7 +373,7 @@ public class DBservices
     //---------------------------------------------------------------------------------
     // Create the SqlCommand using a stored procedure
     //---------------------------------------------------------------------------------
-    private SqlCommand CreateCommandWithStoredProcedureInsertCategories(String spName, SqlConnection con, Author author)
+    private SqlCommand CreateCommandWithStoredProcedureInsertCategory(String spName, SqlConnection con, Category category)
     {
 
         SqlCommand cmd = new SqlCommand(); // create the command object
@@ -386,10 +386,8 @@ public class DBservices
 
         cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
 
-        cmd.Parameters.AddWithValue("@name", author.Name);
-        cmd.Parameters.AddWithValue("@topWork", author.TopWork);
-        cmd.Parameters.AddWithValue("@workCount", author.WorkCount);
-        cmd.Parameters.AddWithValue("@key", author.Key);
+        cmd.Parameters.AddWithValue("@name", category.Name);
+
 
         return cmd;
     }

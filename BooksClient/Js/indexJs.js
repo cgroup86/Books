@@ -133,11 +133,10 @@ function insertAuthorsToDBECB(err) {
 
 function insertCategoriesToDB(data) {
   console.log("Hi from insert category");
-  //let api `${apiStart}Categories`;
+  let api = `${apiStart}Categories`;
 
   data.forEach(category => {
-    console.log(category);
-    //ajaxCall("POST", api, JSON.stringify(category), insertCategoriesToDBSCB, insertCategoriesToDBECB)
+    ajaxCall("POST", api, JSON.stringify(category), insertCategoriesToDBSCB, insertCategoriesToDBECB)
   })
 }
 
@@ -145,6 +144,6 @@ function insertCategoriesToDBSCB(stats) {
   console.log(stats);
 }
 
-function insertCategoriesToDBECB (stats) {
+function insertCategoriesToDBECB (err) {
   console.log(err);
 }

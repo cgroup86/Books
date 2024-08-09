@@ -19,10 +19,10 @@
         //    return dBservices.insertAuthor(this);
         //}
 
-        public List<User> insertCategories()
+        public int insertCategory()
         {
             DBservices dBservices = new DBservices();
-            return dBservices.readUsers();
+            return dBservices.insertCategory(this);
         }
     }
 }
