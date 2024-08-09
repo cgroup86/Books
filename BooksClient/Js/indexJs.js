@@ -43,7 +43,8 @@ $(document).ready(function() {
       // Convert the set to an array an log the unique category names.
       let uniqueCategories = Array.from(categoryNames);
       console.log("Unique category names");
-      console.log(uniqueCategories)
+      console.log(uniqueCategories);
+      insertCategoriesToDB(uniqueCategories);
       
 
       let categorizedBooks = {
@@ -126,4 +127,24 @@ function insertAuthorsToDBSCB(stats) {
 function insertAuthorsToDBECB(err) {
   console.log(err);
   //alert("Failed to insert the authors to the data base");
+}
+
+//------------------------------------------------------------------------
+
+function insertCategoriesToDB(data) {
+  console.log("Hi from insert category");
+  //let api `${apiStart}Categories`;
+
+  data.forEach(category => {
+    console.log(category);
+    //ajaxCall("POST", api, JSON.stringify(category), insertCategoriesToDBSCB, insertCategoriesToDBECB)
+  })
+}
+
+function insertCategoriesToDBSCB(stats) {
+  console.log(stats);
+}
+
+function insertCategoriesToDBECB (stats) {
+  console.log(err);
 }
