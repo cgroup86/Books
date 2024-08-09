@@ -15,7 +15,7 @@ $(document).ready(function() {
 
       // Initialize an empty set to store unique author names
       let authorNames = new Set();
-      
+      let categoryNames = new Set();
       // Loop through each book in the data
       books.forEach(item => {
           // Check if volumeInfo and authors exist
@@ -25,14 +25,25 @@ $(document).ready(function() {
                   authorNames.add(author);
               });
           }
+          // Check if volumeInfo and categories exist
+          if (item.volumeInfo && item.volumeInfo.categories) {
+            // Add each Category to the set
+            item.volumeInfo.categories.forEach(category => {
+              categoryNames.add(category);
+            });
+          }
+
       });
       
       // Convert the set to an array and log the unique author names
       let uniqueAuthors = Array.from(authorNames);
       console.log("Unique Author Names:");
       console.log(uniqueAuthors);
-
-
+      
+      // Convert the set to an array an log the unique category names.
+      let uniqueCategories = Array.from(categoryNames);
+      console.log("Unique category names");
+      console.log(uniqueCategories)
       
 
       let categorizedBooks = {
