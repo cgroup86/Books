@@ -44,7 +44,7 @@ $(document).ready(function() {
       let uniqueCategories = Array.from(categoryNames);
       console.log("Unique category names");
       console.log(uniqueCategories);
-      insertCategoriesToDB(uniqueCategories);
+      //insertCategoriesToDB(uniqueCategories);
       
 
       let categorizedBooks = {
@@ -136,7 +136,10 @@ function insertCategoriesToDB(data) {
   let api = `${apiStart}Categories`;
 
   data.forEach(category => {
-    ajaxCall("POST", api, JSON.stringify(category), insertCategoriesToDBSCB, insertCategoriesToDBECB)
+    const categoryData = {
+      Name: category
+    }
+    ajaxCall("POST", api, JSON.stringify(categoryData), insertCategoriesToDBSCB, insertCategoriesToDBECB)
   })
 }
 
