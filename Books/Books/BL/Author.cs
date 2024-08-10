@@ -14,6 +14,7 @@
             this.WorkCount = workCount;
             this.Key = key;
         }
+        public Author() { }
 
         public string Name { get => name; set => name = value; }
         public string TopWork { get => topWork; set => topWork = value; }
@@ -26,5 +27,10 @@
             return dBservices.insertAuthor(this);
         }
 
+        //public List<Author> Read()
+        //{
+        //    DBservices dBservices = new DBservices();
+        //    return dBservices.readAuthors();
+        //}
     }
 }

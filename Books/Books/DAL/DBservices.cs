@@ -615,4 +615,81 @@ public class DBservices
         return cmd;
     }
 
+
+    //--------------------------------------------------------------------------------------------------
+    // This method Get Author from the isntructor table 
+    //--------------------------------------------------------------------------------------------------
+    public List<Author> readAuthors()
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureReadAuthors("SP_ReadAuthors", con); // create the command
+
+        List<Author> authors = new List<Author>();
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            while (dataReader.Read())
+            {
+                Author author = new Author
+                {
+                    Name = dataReader["name"].ToString(),
+                    TopWork = dataReader["topwork"].ToString(),
+                    WorkCount = Convert.ToInt32(dataReader["workCount"]),
+                    Key = dataReader["key"].ToString()
+                };
+                authors.Add(author);
+            }
+            return authors;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureReadAuthors(String spName, SqlConnection con)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        return cmd;
+    }
+
 }
