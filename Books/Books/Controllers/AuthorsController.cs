@@ -11,19 +11,19 @@ namespace Books.Controllers
     public class AuthorsController : ControllerBase
     {
         // GET: api/<ValuesController>
-        //[HttpGet]
-        //public IEnumerable<Author> Get()
-        //{
-        //    Author author=new Author();
-        //    return author.Read();
-        //}
-
-        //// GET api/<ValuesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet]
+        public IEnumerable<Author> Get()
         {
-            return "value";
+            Author author = new Author();
+            return author.Read();
         }
+
+        ////// GET api/<ValuesController>/5
+        //[HttpGet("{id}")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
         // POST api/<ValuesController>
         [HttpPost]

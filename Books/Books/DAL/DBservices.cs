@@ -647,10 +647,10 @@ public class DBservices
             {
                 Author author = new Author
                 {
-                    Name = dataReader["name"].ToString(),
+                    Name = dataReader["AuthorName"].ToString(),
                     TopWork = dataReader["topwork"].ToString(),
                     WorkCount = Convert.ToInt32(dataReader["workCount"]),
-                    Key = dataReader["key"].ToString()
+                    Key = dataReader["AuthorKey"].ToString()
                 };
                 authors.Add(author);
             }

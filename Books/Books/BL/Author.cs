@@ -27,10 +27,10 @@
             return dBservices.insertAuthor(this);
         }
 
-        //public List<Author> Read()
-        //{
-        //    DBservices dBservices = new DBservices();
-        //    return dBservices.readAuthors();
-        //}
+        public List<Author> Read()
+        {
+            DBservices dBservices = new DBservices();
+            return dBservices.readAuthors();
+        }
     }
 }
