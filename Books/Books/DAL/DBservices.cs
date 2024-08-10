@@ -328,7 +328,7 @@ public class DBservices
 
 
     //--------------------------------------------------------------------------------------------------
-    // This method insert author to the author table 
+    // This method insert Category to the category table 
     //--------------------------------------------------------------------------------------------------
     public int insertCategory(Category category)
     {
@@ -393,7 +393,226 @@ public class DBservices
     }
 
 
+    //--------------------------------------------------------------------------------------------------
+    // This method insert book to the books table 
+    //--------------------------------------------------------------------------------------------------
+    public int InsertBook(Book book)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureInsertBook("SP_InsertBook", con, book);             // create the command
+
+        try
+        {
+            object result = cmd.ExecuteScalar();
+            int bookId = Convert.ToInt32(result);
+            return bookId;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureInsertBook(String spName, SqlConnection con, Book book)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        cmd.Parameters.AddWithValue("@BookTitle", book.Title);
+        cmd.Parameters.AddWithValue("@price", book.Price);
+        cmd.Parameters.AddWithValue("@publisher", book.Publisher);
+        cmd.Parameters.AddWithValue("@publishedDate", book.PublishedDate);
+        cmd.Parameters.AddWithValue("@description", book.Description);
+        cmd.Parameters.AddWithValue("@pageNum", book.PageCount);
+        cmd.Parameters.AddWithValue("@averageRating", book.AverageRating);
+        cmd.Parameters.AddWithValue("@ratingsCount", book.RatingsCount);
+        cmd.Parameters.AddWithValue("@smallThumbnailUrl", book.SmallThumbnailUrl);
+        cmd.Parameters.AddWithValue("@thumbnailUrl", book.ThumbnailUrl);
+        cmd.Parameters.AddWithValue("@lang", book.Language);
+        cmd.Parameters.AddWithValue("@previewLink", book.PreviewLink);
+        cmd.Parameters.AddWithValue("@infoLink", book.InfoLink);
+        cmd.Parameters.AddWithValue("@canonicalVolumeLink", book.CanonicalVolumeLink);
+        cmd.Parameters.AddWithValue("@isEbook", book.IsEbook);
+        cmd.Parameters.AddWithValue("@embeddable", book.Embeddable);
+        cmd.Parameters.AddWithValue("@epubIsAvailable", book.EpubIsAvailable);
+        cmd.Parameters.AddWithValue("@epubDownloadLink", book.EpubDownloadLink);
+        cmd.Parameters.AddWithValue("@pdfIsAvailable", book.PdfIsAvailable);
+        cmd.Parameters.AddWithValue("@pdfDownloadLink", book.PdfDownloadLink);
+        cmd.Parameters.AddWithValue("@webReaderLink", book.WebReaderLink);
+        cmd.Parameters.AddWithValue("@textReading", book.TextReading);
+        cmd.Parameters.AddWithValue("@photoReading", book.PhotoReading);
+        cmd.Parameters.AddWithValue("@googleBooksId", book.GoogleBooksId);
+        cmd.Parameters.AddWithValue("@etag", book.Etag);
+        cmd.Parameters.AddWithValue("@selfLink", book.SelfLink);
 
 
+
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method insert category to the book categories 
+    //--------------------------------------------------------------------------------------------------
+    public void InsertBookCategory(string category, int bookId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureInsertBookCategory("SP_InsertToBookCategory", con, category, bookId);   // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureInsertBookCategory(String spName, SqlConnection con, string category, int bookId)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+
+        cmd.Parameters.AddWithValue("@category", category);
+        cmd.Parameters.AddWithValue("@bookId", bookId);
+
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method insert author to the book authors
+    //--------------------------------------------------------------------------------------------------
+    public void InsertBookAuthor(string authorName, int bookId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureInsertBookAuthor("SP_InsertBookAuthor", con, authorName, bookId);   // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureInsertBookAuthor(String spName, SqlConnection con, string authorName, int bookId)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+
+        cmd.Parameters.AddWithValue("@authorName", authorName);
+        cmd.Parameters.AddWithValue("@bookId", bookId);
+
+        return cmd;
+    }
 
 }

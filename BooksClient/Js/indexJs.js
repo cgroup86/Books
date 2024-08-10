@@ -12,6 +12,7 @@ $(document).ready(function() {
       books = data;
       console.log("All:")
       console.log(books);
+      insertBooksToDB(books);
 
       // Initialize an empty set to store unique author names
       let authorNames = new Set();
@@ -149,4 +150,62 @@ function insertCategoriesToDBSCB(stats) {
 
 function insertCategoriesToDBECB (err) {
   console.log(err);
+}
+
+//------------------------------------------------------------------------
+
+function insertBooksToDB(data) {
+  console.log("Hi from insert book");
+
+  let api = `${apiStart}Books`;
+  data.forEach(book => {
+    
+    const bookData = {
+      Id: 0,
+      Title: book.volumeInfo.title,
+      Price: getRandomInt(25, 200),
+      Authors: book.volumeInfo.authors,
+      Publisher: book.volumeInfo.publisher,
+      PublishedDate: book.volumeInfo.description,
+      Description: book.volumeInfo.description,
+      PageCount: book.volumeInfo.pageCount,
+      Categories: book.volumeInfo.categories,
+      AverageRating: parseInt(book.volumeInfo.averageRating),
+      RatingsCount: book.volumeInfo.ratingsCount,
+      SmallThumbnailUrl: book.volumeInfo.imageLinks.smallThumbnail,
+      ThumbnailUrl: book.volumeInfo.imageLinks.thumbnail,
+      Language: book.volumeInfo.language,
+      PreviewLink: book.volumeInfo.previewLink,
+      InfoLink: book.volumeInfo.infoLink,
+      CanonicalVolumeLink: book.volumeInfo.canonicalVolumeLink,
+      IsEbook: book.saleInfo.isEbook,
+      Embeddable: book.accessInfo.embeddable,
+      EpubIsAvailable: book.accessInfo.epub.isAvailable,
+      EpubDownloadLink: book.accessInfo.epub.downloadLink,
+      PdfIsAvailable: book.accessInfo.pdf.isAvailable,
+      PdfDownloadLink: book.accessInfo.pdf.downloadLink,
+      WebReaderLink: book.accessInfo.webReaderLink,
+      TextReading: book.volumeInfo.readingModes.text,
+      PhotoReading: book.volumeInfo.readingModes.photo,
+      GoogleBooksId: book.id,
+      Etag: book.etag,
+      SelfLink: book.SelfLink
+    }
+    ajaxCall("POST", api, JSON.stringify(bookData), insertBooksToDBSCB, insertBooksToDBECB)
+
+  });
+}
+
+function insertBooksToDBSCB(stats) {
+  console.log(stats);
+}
+
+function insertBooksToDBECB (err) {
+  console.log(err);
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
