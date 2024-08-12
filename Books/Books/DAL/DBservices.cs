@@ -479,7 +479,7 @@ public class DBservices
         cmd.Parameters.AddWithValue("@googleBooksId", book.GoogleBooksId);
         cmd.Parameters.AddWithValue("@etag", book.Etag);
         cmd.Parameters.AddWithValue("@selfLink", book.SelfLink);
-
+        cmd.Parameters.AddWithValue("@isActive", book.IsActive);
 
 
         return cmd;
@@ -617,7 +617,7 @@ public class DBservices
 
 
     //--------------------------------------------------------------------------------------------------
-    // This method Get Author from the isntructor table 
+    // This method Get Author from the Author table 
     //--------------------------------------------------------------------------------------------------
     public List<Author> readAuthors()
     {
@@ -650,9 +650,14 @@ public class DBservices
                     Name = dataReader["AuthorName"].ToString(),
                     TopWork = dataReader["topwork"].ToString(),
                     WorkCount = Convert.ToInt32(dataReader["workCount"]),
-                    Key = dataReader["AuthorKey"].ToString()
+                    Key = dataReader["AuthorKey"].ToString(),
+                    Image = dataReader["images"].ToString(),
+                    Description = dataReader["Description"].ToString()
                 };
-                authors.Add(author);
+                if (author.Name != null && author.Name != "")
+                {
+                    authors.Add(author);
+                }
             }
             return authors;
         }
@@ -692,4 +697,70 @@ public class DBservices
         return cmd;
     }
 
+
+    //--------------------------------------------------------------------------------------------------
+    // This method insert images to the Author table 
+    //--------------------------------------------------------------------------------------------------
+    public int insertImagesOfAuthors(string name, string image, string description)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureIinsertImagesOfAuthors("SP_InsertImages", con, name, image, description);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureIinsertImagesOfAuthors(String spName, SqlConnection con, string name, string image, string description)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        cmd.Parameters.AddWithValue("@name", name);
+        cmd.Parameters.AddWithValue("@image", image);
+        cmd.Parameters.AddWithValue("@description", description);
+
+        return cmd;
+    }
 }

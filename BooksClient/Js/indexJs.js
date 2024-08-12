@@ -242,7 +242,8 @@ $(document).ready(function() {
 //       PhotoReading: book.volumeInfo.readingModes.photo,
 //       GoogleBooksId: book.id,
 //       Etag: book.etag,
-//       SelfLink: book.SelfLink
+//       SelfLink: book.SelfLink,
+//       IsActive: true,
 //     };
 
 //     ajaxCall("POST", api, JSON.stringify(bookData), insertBooksToDBSCB, insertBooksToDBECB);

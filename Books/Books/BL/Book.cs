@@ -42,7 +42,9 @@ namespace Books.BL
         string etag;
         string? selfLink;
 
-        public Book(int id, string title, int price, List<string>? authors, string? publisher, string? publishedDate, string? description, int pageCount, List<string>? categories, int? averageRating, int ratingsCount, string smallThumbnailUrl, string thumbnailUrl, string language, string previewLink, string infoLink, string canonicalVolumeLink, bool isEbook, bool embeddable, bool epubIsAvailable, string? epubDownloadLink, bool pdfIsAvailable, string? pdfDownloadLink, string webReaderLink, bool textReading, bool photoReading, string googleBooksId, string etag, string? selfLink)
+        bool? isActive;
+
+        public Book(int id, string title, int price, List<string>? authors, string? publisher, string? publishedDate, string? description, int pageCount, List<string>? categories, int? averageRating, int ratingsCount, string smallThumbnailUrl, string thumbnailUrl, string language, string previewLink, string infoLink, string canonicalVolumeLink, bool isEbook, bool embeddable, bool epubIsAvailable, string? epubDownloadLink, bool pdfIsAvailable, string? pdfDownloadLink, string webReaderLink, bool textReading, bool photoReading, string googleBooksId, string etag, string? selfLink, bool? isActive)
         {
             this.Id = id;
             this.Title = title;
@@ -73,6 +75,7 @@ namespace Books.BL
             this.GoogleBooksId = googleBooksId;
             this.Etag = etag;
             this.SelfLink = selfLink;
+            this.IsActive = isActive;
         }
 
         public int Id { get => id; set => id = value; }
@@ -104,6 +107,7 @@ namespace Books.BL
         public string GoogleBooksId { get => googleBooksId; set => googleBooksId = value; }
         public string Etag { get => etag; set => etag = value; }
         public string? SelfLink { get => selfLink; set => selfLink = value; }
+        public bool? IsActive { get => isActive; set => isActive = value; }
 
         public void EnsureDefaults()
         {
@@ -134,6 +138,7 @@ namespace Books.BL
             PdfIsAvailable = PdfIsAvailable == null ? false : PdfIsAvailable;
             TextReading = TextReading == null ? false : TextReading;
             PhotoReading = PhotoReading == null ? false : PhotoReading;
+            IsActive = IsActive == null ? true : IsActive;
 
             Categories = Categories ?? new List<string>();
             Authors = Authors ?? new List<string>();

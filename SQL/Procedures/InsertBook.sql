@@ -31,7 +31,9 @@ CREATE PROCEDURE SP_InsertBook
 	@photoReading bit,
     @googleBooksId NVARCHAR(250),
     @etag NVARCHAR(250),
-    @selfLink NVARCHAR(255) 
+    @selfLink NVARCHAR(255),
+	@isActive bit
+
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -42,11 +44,11 @@ BEGIN
 	Insert into Books(BookTitle, price, publisher, publishedDate, [description], pageNum, averageRating, ratingsCount, smallThumbnailUrl
 	, thumbnailUrl, lang, previewLink, infoLink, canonicalVolumeLink, isEbook, embeddable,
 	epubIsAvailable, epubDownloadLink, pdfIsAvailable, pdfDownloadLink, webReaderLink, textReading,
-	photoReading, googleBooksId, etag, selfLink) values(@BookTitle, @price, @publisher, @publishedDate
-	, @description, @pageNum, @averageRating, @ratingsCount, @smallThumbnailUrl, @thumbnailUrl,
-	@lang, @previewLink, @infoLink, @canonicalVolumeLink, @isEbook, @embeddable, @epubIsAvailable,
-	@epubDownloadLink, @pdfIsAvailable, @pdfDownloadLink, @webReaderLink, @textReading, @photoReading,
-	@googleBooksId, @etag, @selfLink);
+	photoReading, googleBooksId, etag, selfLink, isActive) 
+	values(@BookTitle, @price, @publisher, @publishedDate, @description, @pageNum, @averageRating,
+	@ratingsCount, @smallThumbnailUrl, @thumbnailUrl, @lang, @previewLink, @infoLink, @canonicalVolumeLink,
+	@isEbook, @embeddable, @epubIsAvailable, @epubDownloadLink, @pdfIsAvailable, @pdfDownloadLink,
+	@webReaderLink, @textReading, @photoReading, @googleBooksId, @etag, @selfLink, @isActive);
 
 	SELECT SCOPE_IDENTITY() AS NewBookID;
 

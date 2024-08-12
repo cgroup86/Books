@@ -25,5 +25,7 @@ CREATE TABLE Books (
 	photoReading bit,
     googleBooksId NVARCHAR(250),
     etag NVARCHAR(250),
-    selfLink NVARCHAR(255) 
+    selfLink NVARCHAR(255),
+	isActive bit default(1)
 );
+
