@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace Books.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     public class BooksController : ControllerBase
     {
         // POST api/<ValuesController>
@@ -14,6 +13,28 @@ namespace Books.Controllers
         public int Post([FromBody] Book book)
         {
             return book.InsertBook();
+        }
+
+        // GET: api/<BooksController>
+        [HttpGet]
+        public ActionResult<IEnumerable<Book>> Get(bool isEbook, int pageNumber, int pageSize)
+        {
+            Book book = new Book();
+            // Get the paged books and total record count
+            int totalRecords;
+            List<Book> books = book.Read(isEbook, pageNumber, pageSize, out totalRecords);
+
+            // Create a response with pagination metadata
+            var response = new
+            {
+                IsEbook = isEbook,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Books = books
+            };
+
+            return Ok(response);
         }
 
         //// GET: api/<BooksController>

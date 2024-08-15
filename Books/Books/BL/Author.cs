@@ -42,5 +42,12 @@
             DBservices dBservices = new DBservices();
             return dBservices.readAuthors();
         }
+
+        public List<Author> ReadAuthorsByPage(int pageNumber, int pageSize)
+        {
+            DBservices dBservices = new DBservices();
+            return dBservices.readAuthorsByPage(pageNumber, pageSize);
+        }
+
     }
 }

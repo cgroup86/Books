@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Books.BL
 {
@@ -43,7 +44,7 @@ namespace Books.BL
         string? selfLink;
 
         bool? isActive;
-
+        public Book() { }
         public Book(int id, string title, int price, List<string>? authors, string? publisher, string? publishedDate, string? description, int pageCount, List<string>? categories, int? averageRating, int ratingsCount, string smallThumbnailUrl, string thumbnailUrl, string language, string previewLink, string infoLink, string canonicalVolumeLink, bool isEbook, bool embeddable, bool epubIsAvailable, string? epubDownloadLink, bool pdfIsAvailable, string? pdfDownloadLink, string webReaderLink, bool textReading, bool photoReading, string googleBooksId, string etag, string? selfLink, bool? isActive)
         {
             this.Id = id;
@@ -160,6 +161,18 @@ namespace Books.BL
                 dBservices.InsertBookAuthor(this.Authors[i], bookId);
             }
             return bookId;
+        }
+
+        public List<Book> Read(bool isEbook, int pageNumber, int pageSize, out int totalRecords)
+        {
+            DBservices dBservices = new DBservices();
+            List<Book> books = dBservices.GetPagedBooks(isEbook, pageNumber, pageSize, out totalRecords);
+            // Loop through each book and assign authors
+            foreach (Book book in books)
+            {
+                book.Authors = dBservices.GetAuthorsForBook(book.Id);
+            }
+            return books;
         }
     }
 }

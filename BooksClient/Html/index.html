@@ -224,25 +224,174 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Slightly darker shadow on hover */
   }
   
+  /* Center pagination controls */
+  .pagination-controls {
+      text-align: center;
+      margin-top: 20px;
+  }
+
+  /* Style for section titles */
+  .section-title {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: bold;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #333;
+    font-weight: bold;
+    margin-top: 20px;
+}
 
     </style>
 </head>
 <body>
     <header id="header-container"></header>
     <!-- <button id="fetchAuthorsButton">Fetch Authors Data</button> -->
-    <main class="main-container">
-      <div class="book-card">
-        <img src="http://books.google.com/books/content?id=4cs2AwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="cover">
-        <h3>
-          <a href="http://books.google.com/books?id=4cs2AwEACAAJ&dq=subject:adventure+language:en&hl=&as_pt=BOOKS&cd=9&source=gbs_api">Red Rackham's Treasure</a>
-        </h3>
-        <p class="price-number">
-          <b>Price: <span>190₪</span></b>
-        </p>
-        <button class="add-book-button" data-book-id="4cs2AwEACAAJ">Add book</button>
-      </div>    
+    <!-- <main>
+      <div class="main-container">
+        <div class="book-card">
+          <img src="http://books.google.com/books/content?id=4cs2AwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="cover">
+          <h3>
+            <a href="http://books.google.com/books?id=4cs2AwEACAAJ&dq=subject:adventure+language:en&hl=&as_pt=BOOKS&cd=9&source=gbs_api">Red Rackham's Treasure</a>
+          </h3>
+          <p class="price-number">
+            <b>Price: <span>190₪</span></b>
+          </p>
+          <button class="add-book-button" data-book-id="4cs2AwEACAAJ">Add book</button>
+        </div>    
+      </div>
+
+      <div class="main-container">
+        <div class="book-card">
+          <img src="http://books.google.com/books/content?id=4cs2AwEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api" alt="cover">
+          <h3>
+            <a href="http://books.google.com/books?id=4cs2AwEACAAJ&dq=subject:adventure+language:en&hl=&as_pt=BOOKS&cd=9&source=gbs_api">Red Rackham's Treasure</a>
+          </h3>
+          <p class="price-number">
+            <b>Price: <span>190₪</span></b>
+          </p>
+          <button class="add-book-button" data-book-id="4cs2AwEACAAJ">Add book</button>
+        </div>    
+      </div>
+      
+    </main> -->
+    
+    <main>
+        <h2 class="section-title">Digital Books</h2>
+        <div class="main-container" id="digital-books-container">
+            <!-- Digital books will be loaded here -->
+        </div>
+        <div id="digital-pagination" class="pagination-controls"></div>
+        
+        <h2 class="section-title">Digital Books</h2>
+        <div class="main-container" id="physical-books-container">
+            <!-- Physical books will be loaded here -->
+        </div>
+        <div id="physical-pagination" class="pagination-controls"></div>
     </main>
     
+    <script>
+      $(document).ready(function() {
+        let digitalPage = 1;
+        let physicalPage = 1;
+        const pageSize = 5;
+
+        loadDigitalBooks(digitalPage, pageSize);
+        loadPhysicalBooks(physicalPage, pageSize);
+      });
+
+      function loadDigitalBooks(pageNumber, pageSize) {
+          fetchBooksFromDB(true, pageNumber, pageSize);
+      }
+
+      function loadPhysicalBooks(pageNumber, pageSize) {
+          fetchBooksFromDB(false, pageNumber, pageSize);
+      }
+
+      // Function to render books in the container
+      function renderBooks(books, container) {
+          container.empty(); // Clear the container
+  
+          books.forEach(book => {
+              let bookCard = `
+              <div class="book-card">
+                  <img src="${book.smallThumbnailUrl}" alt="cover">
+                  <h3>
+                      <a href="${book.infoLink}" target="_blank">${book.title}</a>
+                  </h3>
+                  <p class="price-number">
+                      <b>Price: <span>${book.price}₪</span></b>
+                  </p>
+                  <button class="add-book-button" data-book-id="${book.googleBooksId}">Add book</button>
+              </div>`;
+              
+              container.append(bookCard);
+          });
+      }
+
+      function fetchBooksFromDB(isEbook, pageNumber, pageSize) {
+        console.log(pageSize);
+        console.log("hi from fetch books from data base");
+        const api = `https://localhost:7291/api/Books?isEbook=${isEbook}&pageNumber=${pageNumber}&pageSize=${pageSize}`;
+        ajaxCall("GET", api, "", fetchBooksSuccess, fetchBooksError);
+      }
+
+      function fetchBooksSuccess(response) {
+        console.log("Success response: ", response);
+
+        const container = response.isEbook ? $('.main-container').first() : $('.main-container').last();
+        const paginationElement = response.isEbook ? $('#digital-pagination') : $('#physical-pagination');
+        renderBooks(response.books, container);
+        updatePaginationControls(response.totalRecords, response.pageSize, response.pageNumber, paginationElement);
+      }
+
+      function fetchBooksError(err) {
+        console.error("Error fetching books:", err);
+      }
+
+      // Function to update pagination controls
+    function updatePaginationControls(totalRecords, pageSize, currentPage, paginationElement) {
+        const totalPages = Math.ceil(totalRecords / pageSize);
+
+        let paginationHtml = `
+            <button class="prevPage" ${currentPage <= 1 ? 'disabled' : ''}>Previous</button>
+            <span>Page ${currentPage} of ${totalPages}</span>
+            <button class="nextPage" ${currentPage >= totalPages ? 'disabled' : ''}>Next</button>
+        `;
+        paginationElement.html(paginationHtml);
+
+        // Event handlers for pagination buttons
+        paginationElement.find('.prevPage').on('click', function () {
+            if (currentPage > 1) {
+                currentPage--;
+                loadBooksBasedOnContainer(paginationElement, currentPage, pageSize);
+            }
+        });
+
+        paginationElement.find('.nextPage').on('click', function () {
+            if (currentPage < totalPages) {
+                currentPage++;
+                loadBooksBasedOnContainer(paginationElement, currentPage, pageSize);
+            }
+        });
+
+        // Function to load books based on the container
+      function loadBooksBasedOnContainer(paginationElement, page, pageSize) {
+          if (paginationElement.is('#digital-pagination')) {
+              loadDigitalBooks(page, pageSize);
+          } else if (paginationElement.is('#physical-pagination')) {
+              loadPhysicalBooks(page, pageSize);
+          }
+      }
+
+      
+    }
+    </script>
     
     <script src="../Js/ajaxCalls.js"></script>
     <script src="../Js/headerJs.js"></script>
