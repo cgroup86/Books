@@ -1,6 +1,7 @@
 ﻿// TODO - clear the forms when close/ move
 // TODO - when logged in successfully remove the register and show logout button
 // TODO - a 5 second loading page shows at the start of everypage, don't have to be part of the header
+// TODO - NOT ON JS - ON SERVER SIDE - readAuthorsByPage FIX HOW ITS MADE IN DBservices.cs
 const apiStart = `https://localhost:7291/api/`;
 
 // Handles the login/register forms and buttons

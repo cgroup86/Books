@@ -26,6 +26,7 @@ CREATE TABLE Books (
     googleBooksId NVARCHAR(250),
     etag NVARCHAR(250),
     selfLink NVARCHAR(255),
-	isActive bit default(1)
+	isActive bit default(1),
+	isAvailable bit default(1) NOT NULL,
+	numOfPrints int not null default(1),
 );
-

@@ -10,9 +10,9 @@ namespace Books.BL
         string password;
         bool isAdmin;
         bool isActive;
-        private PersonalLibrary library;
+        //private PersonalLibrary library;
 
-        public User(int id, string name, string email, string password, bool isAdmin, bool isActive, PersonalLibrary library)
+        public User(int id, string name, string email, string password, bool isAdmin, bool isActive)
         {
             this.Id = id;
             this.Name = name;
@@ -20,7 +20,7 @@ namespace Books.BL
             this.Password = password;
             this.IsAdmin = isAdmin;
             this.IsActive = isActive;
-            this.Library = library;
+            //this.Library = library;
         }
 
         public User () { }
@@ -31,7 +31,7 @@ namespace Books.BL
         public string Password { get => password; set => password = value; }
         public bool IsAdmin { get => isAdmin; set => isAdmin = value; }
         public bool IsActive { get => isActive; set => isActive = value; }
-        public PersonalLibrary Library { get => library; set => library = value; }
+        //public PersonalLibrary Library { get => library; set => library = value; }
 
         public List<User> Read()
         {

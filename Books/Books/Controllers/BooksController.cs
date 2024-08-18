@@ -10,31 +10,45 @@ namespace Books.Controllers
     {
         // POST api/<ValuesController>
         [HttpPost]
-        public int Post([FromBody] Book book)
+        public IActionResult Post([FromBody] Book book)
         {
-            return book.InsertBook();
+            try
+            {
+                return Ok(book.InsertBook());
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/<BooksController>
         [HttpGet]
-        public ActionResult<IEnumerable<Book>> Get(bool isEbook, int pageNumber, int pageSize)
+        public IActionResult Get(bool isEbook, int pageNumber, int pageSize, bool fetchTotalCount = false)
         {
-            Book book = new Book();
-            // Get the paged books and total record count
-            int totalRecords;
-            List<Book> books = book.Read(isEbook, pageNumber, pageSize, out totalRecords);
-
-            // Create a response with pagination metadata
-            var response = new
+            try
             {
-                IsEbook = isEbook,
-                TotalRecords = totalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                Books = books
-            };
+                Book book = new Book();
+                // Get the paged books and total record count
+                int totalRecords = 0;
+                List<Book> books = book.Read(isEbook, pageNumber, pageSize, out totalRecords, fetchTotalCount);
 
-            return Ok(response);
+                // Create a response with pagination metadata
+                var response = new
+                {
+                    IsEbook = isEbook,
+                    TotalRecords = totalRecords,
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    Books = books
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                //return BadRequest(ex.Message);
+                return StatusCode(500, "An unexpected error occurred.");
+            }
         }
 
         //// GET: api/<BooksController>

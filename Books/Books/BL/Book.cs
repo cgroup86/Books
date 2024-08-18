@@ -44,8 +44,10 @@ namespace Books.BL
         string? selfLink;
 
         bool? isActive;
+        bool isAvailable; // For physical book, 1 available for sale, 0 not available for sale
+        int numOfPrints; // related physical only
         public Book() { }
-        public Book(int id, string title, int price, List<string>? authors, string? publisher, string? publishedDate, string? description, int pageCount, List<string>? categories, int? averageRating, int ratingsCount, string smallThumbnailUrl, string thumbnailUrl, string language, string previewLink, string infoLink, string canonicalVolumeLink, bool isEbook, bool embeddable, bool epubIsAvailable, string? epubDownloadLink, bool pdfIsAvailable, string? pdfDownloadLink, string webReaderLink, bool textReading, bool photoReading, string googleBooksId, string etag, string? selfLink, bool? isActive)
+        public Book(int id, string title, int price, List<string>? authors, string? publisher, string? publishedDate, string? description, int pageCount, List<string>? categories, int? averageRating, int ratingsCount, string smallThumbnailUrl, string thumbnailUrl, string language, string previewLink, string infoLink, string canonicalVolumeLink, bool isEbook, bool embeddable, bool epubIsAvailable, string? epubDownloadLink, bool pdfIsAvailable, string? pdfDownloadLink, string webReaderLink, bool textReading, bool photoReading, string googleBooksId, string etag, string? selfLink, bool? isActive, bool isAvailable, int numOfPrints)
         {
             this.Id = id;
             this.Title = title;
@@ -77,6 +79,8 @@ namespace Books.BL
             this.Etag = etag;
             this.SelfLink = selfLink;
             this.IsActive = isActive;
+            this.IsAvailable = isAvailable;
+            this.NumOfPrints = numOfPrints;
         }
 
         public int Id { get => id; set => id = value; }
@@ -109,6 +113,8 @@ namespace Books.BL
         public string Etag { get => etag; set => etag = value; }
         public string? SelfLink { get => selfLink; set => selfLink = value; }
         public bool? IsActive { get => isActive; set => isActive = value; }
+        public bool IsAvailable { get => isAvailable ; set => isAvailable = value; }
+        public int NumOfPrints { get => numOfPrints; set => numOfPrints = value; }
 
         public void EnsureDefaults()
         {
@@ -147,32 +153,46 @@ namespace Books.BL
 
         public int InsertBook()
         {
-            EnsureDefaults();
-            DBservices dBservices = new DBservices();
-            int bookId = dBservices.InsertBook(this);
-
-            for (int i = 0; i < this.Categories.Count(); i++)
+            try
             {
-                dBservices.InsertBookCategory(this.Categories[i], bookId);
-            }
+                EnsureDefaults();
+                DBservices dBservices = new DBservices();
+                int bookId = dBservices.InsertBook(this);
 
-            for (int i = 0; i < this.Authors.Count(); i++)
-            {
-                dBservices.InsertBookAuthor(this.Authors[i], bookId);
+                for (int i = 0; i < this.Categories.Count(); i++)
+                {
+                    dBservices.InsertBookCategory(this.Categories[i], bookId);
+                }
+
+                for (int i = 0; i < this.Authors.Count(); i++)
+                {
+                    dBservices.InsertBookAuthor(this.Authors[i], bookId);
+                }
+                return bookId;
             }
-            return bookId;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public List<Book> Read(bool isEbook, int pageNumber, int pageSize, out int totalRecords)
+        public List<Book> Read(bool isEbook, int pageNumber, int pageSize, out int totalRecords, bool fetchTotalCount)
         {
-            DBservices dBservices = new DBservices();
-            List<Book> books = dBservices.GetPagedBooks(isEbook, pageNumber, pageSize, out totalRecords);
-            // Loop through each book and assign authors
-            foreach (Book book in books)
+            try
             {
-                book.Authors = dBservices.GetAuthorsForBook(book.Id);
+                DBservices dBservices = new DBservices();
+                List<Book> books = dBservices.GetPagedBooks(isEbook, pageNumber, pageSize, out totalRecords, fetchTotalCount);
+                // Loop through each book and assign authors
+                foreach (Book book in books)
+                {
+                    book.Authors = dBservices.GetAuthorsForBook(book.Id);
+                }
+                return books;
             }
-            return books;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

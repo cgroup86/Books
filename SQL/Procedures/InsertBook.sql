@@ -32,23 +32,31 @@ CREATE PROCEDURE SP_InsertBook
     @googleBooksId NVARCHAR(250),
     @etag NVARCHAR(250),
     @selfLink NVARCHAR(255),
-	@isActive bit
-
+	@isActive bit,
+	@isAvailable bit,
+	@numOfPrints int
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	-- SET NOCOUNT ON;
 
+	-- Check if a book with the same title already exists
+    IF EXISTS (SELECT 1 FROM Books WHERE BookTitle = @BookTitle)
+    BEGIN
+        -- If it exists, return a message and do not insert the book
+        SELECT 'Book with the same title already exists' AS Message;
+        RETURN;
+    END
     -- Insert statements for procedure here
 	Insert into Books(BookTitle, price, publisher, publishedDate, [description], pageNum, averageRating, ratingsCount, smallThumbnailUrl
 	, thumbnailUrl, lang, previewLink, infoLink, canonicalVolumeLink, isEbook, embeddable,
 	epubIsAvailable, epubDownloadLink, pdfIsAvailable, pdfDownloadLink, webReaderLink, textReading,
-	photoReading, googleBooksId, etag, selfLink, isActive) 
+	photoReading, googleBooksId, etag, selfLink, isActive, isAvailable, numOfPrints) 
 	values(@BookTitle, @price, @publisher, @publishedDate, @description, @pageNum, @averageRating,
 	@ratingsCount, @smallThumbnailUrl, @thumbnailUrl, @lang, @previewLink, @infoLink, @canonicalVolumeLink,
 	@isEbook, @embeddable, @epubIsAvailable, @epubDownloadLink, @pdfIsAvailable, @pdfDownloadLink,
-	@webReaderLink, @textReading, @photoReading, @googleBooksId, @etag, @selfLink, @isActive);
+	@webReaderLink, @textReading, @photoReading, @googleBooksId, @etag, @selfLink, @isActive, @isAvailable, @numOfPrints);
 
 	SELECT SCOPE_IDENTITY() AS NewBookID;
 

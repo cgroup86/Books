@@ -1,7 +1,13 @@
+-- =============================================
+-- Author: <>
+-- Create date: <17/08/24>
+-- Description:	<get pages>
+-- =============================================
 CREATE PROCEDURE SP_GetPagedBooks
     @IsEbook BIT,
     @PageNumber INT,
-    @PageSize INT
+    @PageSize INT,
+    @FetchTotalCount BIT = 0
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -13,11 +19,14 @@ BEGIN
         RETURN;
     END
 
-    -- Calculate the total number of records
-    DECLARE @TotalRecords INT;
-    SELECT @TotalRecords = COUNT(*)
-    FROM Books B
-    WHERE B.IsEbook = @IsEbook;
+    -- Optional: Calculate the total number of records
+    DECLARE @TotalRecords INT = NULL;
+    IF @FetchTotalCount = 1
+    BEGIN
+        SELECT @TotalRecords = COUNT(*)
+        FROM Books B
+        WHERE B.IsEbook = @IsEbook;
+    END
 
     -- Perform the pagination query
     SELECT *
@@ -29,6 +38,6 @@ BEGIN
     ) AS Result
     WHERE RowNumber BETWEEN ((@PageNumber - 1) * @PageSize) + 1 AND @PageNumber * @PageSize;
 
-    -- Return the total number of records
+	-- Return the total number of records
     SELECT @TotalRecords AS TotalRecords;
 END

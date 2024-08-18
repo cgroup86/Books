@@ -24,19 +24,75 @@
         public bool Status { get => status; set => status = value; }
         public bool IsPurchased { get => isPurchased; set => isPurchased = value; }
 
-        public bool AddWantToRead(int bookId, int userId, bool status, bool isPurchased)
+        public bool AddToLibrary()
         {
             try
             {
                 DBservices dBservices = new DBservices();
-                //dBservices.AddWantToRead(bookId, userId, status, isPurchased);
-                return true;
+                return dBservices.AddToLibrary(this);
             }
             catch (Exception ex)
             {
                 return false;
             }
          
+        }
+
+        public static void UpdateBookStatus(int userId, int bookId, bool newStatus)
+        {
+
+            try
+            {
+                DBservices dbs = new DBservices();
+                dbs.UpdateBookStatus(userId, bookId, newStatus);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException("Error updating book status: " + ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+
+        public static List<object> GetBooksToRead(int userId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.GetBooksToRead(userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+
+        public static List<object> GetBooksRead(int userId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.GetBooksRead(userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+
+        public static List<object> GetBooksPurchased(int userId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.GetBooksPurchased(userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
         }
     }
 }
