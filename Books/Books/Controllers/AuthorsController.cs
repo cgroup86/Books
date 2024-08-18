@@ -39,9 +39,17 @@ namespace Books.Controllers
 
         //POST api/<ValuesController>
         [HttpPost]
-        public int Post([FromBody] Author author)
-        {
-            return author.Insert();
+        public IActionResult Post([FromBody] Author author)
+        {       
+            try
+            {
+                var insert = author.Insert();
+                return Ok(insert);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
         }
 
 
@@ -52,6 +60,14 @@ namespace Books.Controllers
         {
             Author author = new Author();
             return author.InsertImagesOfAuthor(name, image, description);
+        }
+
+        //// GET api/<ValuesController>/5
+        [HttpGet("getBooksByAuthorsName/{authorName}")]
+        public IEnumerable<Book> Get(string authorName)
+        {
+            Author author = new Author();
+            return author.ReadBooksByAuthorName(authorName);
         }
 
         //// DELETE api/<ValuesController>/5

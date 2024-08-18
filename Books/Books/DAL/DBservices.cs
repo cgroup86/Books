@@ -1039,9 +1039,11 @@ public class DBservices
     }
 
 
-    //--------------------------------------------------------------------------------------------------
-    // This method to get Authors per page  
-    //--------------------------------------------------------------------------------------------------
+
+    ////--------------------------------------------------------------------------------------------------
+    //// This method to get 10 Authors per page  
+    ////--------------------------------------------------------------------------------------------------
+
     public List<Author> readAuthorsByPage(int pageNumber, int pageSize)
     {
         SqlConnection con;
@@ -1053,13 +1055,11 @@ public class DBservices
         }
         catch (Exception ex)
         {
+            // write to log
             throw (ex);
         }
 
-        cmd = new SqlCommand("GetAuthorsByTypePaginated", con); // call the stored procedure
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@PageNumber", pageNumber);
-        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        cmd = CreateCommandWithStoredProcedureReadAuthors("GetAuthorsByTypePaginated", con, pageNumber, pageSize); // create the command
 
         List<Author> authors = new List<Author>();
 
@@ -1069,7 +1069,7 @@ public class DBservices
 
             while (dataReader.Read())
             {
-                Author author = new Author
+                Author author = new Author()
                 {
                     Name = dataReader["AuthorName"].ToString(),
                     TopWork = dataReader["topwork"].ToString(),
@@ -1084,16 +1084,38 @@ public class DBservices
         }
         catch (Exception ex)
         {
+            // write to log
             throw (ex);
         }
         finally
         {
             if (con != null)
             {
+                // close the db connection
                 con.Close();
             }
         }
     }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for reading authors
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureReadAuthors(string spName, SqlConnection con, int pageNumber, int pageSize)
+    {
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+        cmd.CommandText = spName;          // stored procedure name
+        cmd.CommandTimeout = 10;           // set timeout to 10 seconds
+        cmd.CommandType = CommandType.StoredProcedure; // specify that this is a stored procedure
+
+        // Add parameters for pagination
+        cmd.Parameters.AddWithValue("@PageNumber", pageNumber);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+
+        return cmd;
+    }
+
 
 
     public Question GetQuestion1()
@@ -1553,6 +1575,105 @@ public class DBservices
         cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
 
         cmd.Parameters.AddWithValue("@UserId", userId);
+
+        return cmd;
+    }
+
+    ////--------------------------------------------------------------------------------------------------
+    //// This method to get books by author name 
+    ////--------------------------------------------------------------------------------------------------
+
+    public List<Book> readBooksByAuthorName(string authorName)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureReadBooksByAuthorName("GetBooksByAuthorName", con, authorName); // create the command
+
+        List<Book> books = new List<Book>();
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            while (dataReader.Read())
+            {
+                Book book = new Book
+                {
+                    Id = Convert.ToInt32(dataReader["BookId"]),
+                    Title = dataReader["BookTitle"].ToString(),
+                    Price = Convert.ToInt32(dataReader["price"]),
+                    Publisher = dataReader["publisher"].ToString(),
+                    PublishedDate = dataReader["publishedDate"].ToString(),
+                    Description = dataReader["description"].ToString(),
+                    PageCount = Convert.ToInt32(dataReader["pageNum"]),
+                    AverageRating = Convert.ToInt32(dataReader["averageRating"]),
+                    RatingsCount = Convert.ToInt32(dataReader["ratingsCount"]),
+                    SmallThumbnailUrl = dataReader["smallThumbnailUrl"].ToString(),
+                    ThumbnailUrl = dataReader["thumbnailUrl"].ToString(),
+                    Language = dataReader["lang"].ToString(),
+                    PreviewLink = dataReader["previewLink"].ToString(),
+                    InfoLink = dataReader["infoLink"].ToString(),
+                    CanonicalVolumeLink = dataReader["canonicalVolumeLink"].ToString(),
+                    IsEbook = bool.Parse(dataReader["isEbook"].ToString()),
+                    Embeddable = bool.Parse(dataReader["embeddable"].ToString()),
+                    EpubIsAvailable = bool.Parse(dataReader["epubIsAvailable"].ToString()),
+                    EpubDownloadLink = dataReader["epubDownloadLink"].ToString(),
+                    PdfIsAvailable = bool.Parse(dataReader["pdfIsAvailable"].ToString()),
+                    PdfDownloadLink = dataReader["pdfDownloadLink"].ToString(),
+                    WebReaderLink = dataReader["webReaderLink"].ToString(),
+                    TextReading = bool.Parse(dataReader["textReading"].ToString()),
+                    PhotoReading = bool.Parse(dataReader["photoReading"].ToString()),
+                    GoogleBooksId = dataReader["googleBooksId"].ToString(),
+                    Etag = dataReader["etag"].ToString(),
+                    SelfLink = dataReader["selfLink"].ToString(),
+                    IsActive = bool.Parse(dataReader["isActive"].ToString()),
+                };
+                books.Add(book);
+            }
+
+            return books;
+
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for reading authors
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureReadBooksByAuthorName(string spName, SqlConnection con, string authorName)
+    {
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+        cmd.CommandText = spName;          // stored procedure name
+        cmd.CommandTimeout = 10;           // set timeout to 10 seconds
+        cmd.CommandType = CommandType.StoredProcedure; // specify that this is a stored procedure
+
+        // Add parameters for pagination
+        cmd.Parameters.AddWithValue("@authorName", authorName);
 
         return cmd;
     }

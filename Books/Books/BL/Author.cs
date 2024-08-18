@@ -28,8 +28,15 @@
 
         public int Insert()
         {
-            DBservices dBservices = new DBservices();
-            return dBservices.insertAuthor(this);
+            try
+            {
+                DBservices dBservices = new DBservices();
+                return dBservices.insertAuthor(this);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public int InsertImagesOfAuthor(string name, string image, string description)

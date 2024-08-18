@@ -1,8 +1,10 @@
+let booksToReadData = [];
+let booksReadData = [];
+let booksPurchasedData = [];
+
 $(document).ready(function() {
   getFromServer(); // Fetch data and render tables
-
 });
-//---------------------------------------------------------------------------------------------------------------------------------------
 
 function getFromServer() {
   console.log("Hi from getFromServer");
@@ -14,33 +16,33 @@ function getFromServer() {
   const booksPurchasedApi = `https://localhost:7291/api/PersonalLibraries/BooksPurchased/UserId/${userId}`;
   
   // Fetch Books To Read
-  // Fetch Books To Read
   ajaxCall("GET", booksToReadApi, "", function(booksToRead) {
-      console.log("Books To Read:", booksToRead); // Log response
+      console.log("Books To Read:", booksToRead); 
+      booksToReadData = booksToRead;
       renderTable('#booksToReadTable', booksToRead, "Books to Read");
   }, getBooksECB);
   
   // Fetch Books Read
   ajaxCall("GET", booksReadApi, "", function(booksRead) {
-      console.log("Books Read:", booksRead); // Log response
+      console.log("Books Read:", booksRead); 
+      booksReadData = booksRead;
       renderTable('#booksReadTable', booksRead, "Books Read");
   }, getBooksECB);
   
   // Fetch Books Purchased
   ajaxCall("GET", booksPurchasedApi, "", function(booksPurchased) {
-      console.log("Books Purchased:", booksPurchased); // Log response
+      console.log("Books Purchased:", booksPurchased); 
+      booksPurchasedData = booksPurchased;
       renderTable('#booksPurchasedTable', booksPurchased, "Books Purchased");
   }, getBooksECB);
 }
+
 function getBooksECB(err) {
   console.log(err);
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------------
-
 function renderTable(tableId, tableData, title) {
-  try
-  {
+  try {
     if (!$.fn.DataTable.isDataTable(tableId)) {
       $(tableId).DataTable({
           data: tableData,
@@ -77,99 +79,95 @@ function renderTable(tableId, tableData, title) {
                     let status = row.status ? 'HaveRead' : 'ToRead';
                     let toggleStatus = row.status ? 'Mark as ToRead' : 'Mark as HaveRead';
                     return `<button type='button' class='statusBtn btn btn-primary' ${dataBook} data-status='${row.status}'>${toggleStatus}</button>`;
-
-                      // let dataBook = "data-bookId='" + row.id + "'";
-                      // let status = row.status ? 'HaveRead' : 'ToRead';
-                      // let toggleStatus = row.status ? 'Mark as ToRead' : 'Mark as HaveRead';
-                      // let statusButton = "<button type='button' class='statusBtn btn btn-primary' " + dataBook + " data-status='" + row.status + "'>" + toggleStatus + "</button>";
-                      // return statusButton;
-
-                      // let dataBook = "data-bookId='" + row.bookId + "'";
-                      // let toggleButton = row.status ? 
-                      //     `<button type='button' class='btn btn-secondary' ${dataBook} data-action='markAsToRead'>Mark as To Read</button>` : 
-                      //     `<button type='button' class='btn btn-primary' ${dataBook} data-action='markAsRead'>Mark as Read</button>`;
-                      // return toggleButton;
                   },
                   title: "Actions"
               }
           ],
-          
       });
 
       // Bind button events for the newly rendered table
       buttonEvents(tableId);
-  } 
-  }
-  catch (err)
-  {
+    } else {
+      // Update existing DataTable if needed
+      $(tableId).DataTable().clear().rows.add(tableData).draw();
+    }
+  } catch (err) {
     alert(err);
   }
-  
 }
-// else {
-//   // Update existing DataTable if needed
-//   $(tableId).DataTable().clear().rows.add(tableData).draw();
-// }
 
 function buttonEvents(tableId) {
   $(document).on('click', '.statusBtn', function() {
     let bookId = $(this).data('bookid');
     let currentStatus = $(this).data('status') === 'true';
-    toggleBookStatus(bookId, !currentStatus);
+    let newStatus = !currentStatus;
+    
+    // Update the status on the server
+    updateBookStatus(bookId, newStatus);
   });
 }
 
-// Function to toggle book status and update DataTables
-function toggleBookStatus(bookId, newStatus) {
-  // Find the book and update its status
-  let allBooks = [...booksToReadData, ...booksReadData, ...booksPurchasedData];
-  let book = allBooks.find(b => b.bookId == bookId);
+function updateBookStatus(bookId, newStatus) {
+  const apiUrl = `https://localhost:7291/api/PersonalLibraries/UpdateBookStatus/UserId/1/BookId/${bookId}/NewStatus/${newStatus}`;
 
-  if (book) {
-      book.status = newStatus;
-
-      // Update the status button in the DataTables
-      $('#booksToReadTable').DataTable().clear().rows.add(booksToReadData).draw();
-      $('#booksReadTable').DataTable().clear().rows.add(booksReadData).draw();
-      $('#booksPurchasedTable').DataTable().clear().rows.add(booksPurchasedData).draw();
+  $.ajax({
+    url: apiUrl,
+    type: 'PUT', // Use 'PUT' for updating status
+    success: function(response) {
+      // Update DataTables based on the current book status
+      if (newStatus) {
+        // Move book from ToRead to Read
+        moveBook('#booksToReadTable', '#booksReadTable', bookId, newStatus);
+      } else {
+        // Move book from Read to ToRead
+        moveBook('#booksReadTable', '#booksToReadTable', bookId, newStatus);
+      }
       
-      // Optionally, you may want to make an API call here to persist the status change
+      // Optionally update the Purchased table if needed
+      updatePurchasedTable(bookId, newStatus);
+    },
+    error: function(xhr, status, error) {
+      console.error('Error updating book status:', status, error);
+    }
+  });
+}
+
+function moveBook(fromTableId, toTableId, bookId, newStatus) {
+  let fromTable = $(fromTableId).DataTable();
+  let toTable = $(toTableId).DataTable();
+
+  // Find the book in the source table
+  let bookData = fromTable.row(function(idx, data, node) {
+    return data.bookId === bookId;
+  }).data();
+
+  if (bookData) {
+    // Remove the book from the source table
+    fromTable.row(function(idx, data, node) {
+      return data.bookId === bookId;
+    }).remove().draw();
+
+    // Add the book to the target table
+    toTable.row.add(bookData).draw();
+
+    // Update the button text and data-status attribute
+    updateButtonStatus(bookId, newStatus);
   }
 }
 
+function updateButtonStatus(bookId, newStatus) {
+  let buttonText = newStatus ? 'Mark as ToRead' : 'Mark as HaveRead';
+  let buttonStatus = newStatus ? 'true' : 'false';
 
+  // Update the button text and status in both tables
+  ['#booksToReadTable', '#booksReadTable'].forEach(tableId => {
+    $(tableId).find(`button[data-bookid='${bookId}']`)
+      .text(buttonText)
+      .data('status', buttonStatus);
+  });
+}
 
-// function toggleBookStatus(bookId, newStatus) {
-//   // Define the API URL for updating the book status
-//   const apiUrl = `https://localhost:7291/api/PersonalLibraries/UpdateBookStatus/UserId/1/BookId/${bookId}/NewStatus/${newStatus}`;
-//   console.log(apiUrl);
-//   // Make the API call to update the book status
-//   $.ajax({
-//     url: apiUrl,
-//     type: 'put', // Assuming the API uses POST for updates
-//     success: function(response) {
-//       // Update the status in the DataTable
-//       updateDataTables();
-//     },
-//     error: function(xhr, status, error) {
-//       console.error('Error updating book status:', status, error);
-//     }
-//   });
-// }
-
-// function updateDataTables() {
-//   // Re-fetch the data from the server and update the DataTables
-//   getFromServer(); // This function will re-render the DataTables with updated data
-// }
-
-// function buttonEvents(tableId) {
-//   $(document).on('click', '.btn', function() {
-//     let bookId = $(this).data('bookid');
-//     let currentStatus = $(this).data('action') === 'markAsRead';
-//     let newStatus = !currentStatus;
-
-//     // Toggle the book status
-//     toggleBookStatus(bookId, newStatus);
-//   });
-// }
-
+function updatePurchasedTable(bookId, newStatus) {
+  // Fetch the updated data if needed or handle changes locally
+  // Example: if needed, you could fetch and update the Purchased table similarly
+}
