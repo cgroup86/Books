@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible-Compatible" content="IE-edge" />
+    <meta name="viewport" content="width=decice-width, initial-scale=1.0" />
+    <title>Books</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundele.main.css" />
+    <!--<link rel="stylesheet" href="style.css"/>??????-->
+    <style>
+        @media(max-width:990px){
+            .tranding-slider-control .wsaper-button-next{
+                left:70% !important;
+                transform: translateX(-70%) !important;
+            }
+        }
+
+        @media (max-width:450px) {
+            •tranding-slider-control .swiper-button-next {
+                left: 80% limportant;
+                transform: translateX(-80%) !important;
+            }
+        }
+        @media (max-width:990px) {
+            •tranding-slider-control .swiper-button-prev {
+                left: 30% !important;
+                transform: translateX(-30%) !important;
+            }
+           
+        }
+        @media (max-width:450px) {
+            • tranding-slider-control •swiper-button-prev {
+                left: 20% !important;
+                transform: translateX(-20%) !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    <section id="tranding">
+        <div>
+            <h3 class="text-center section-subheading">popular Delivery</h3>
+            <h1 class="text-center section-subheading">Tranding Books</h1>
+        </div>
+        <dive class="container">
+
+        </dive>
+    </section>
+
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dis/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dis/ionicons/ionicons.js"></script>
+    <script type="module" src="https://unpkg.com/wsiper@8/swiper-bundle.min.js"></script>
+    <!--<script> my script</script>-->
+    <script>
+        var TrandingSlider = new Swiper('.tranding-slider',{
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            loop: true,
+            slidesPerview: 'auto',
+            coverflowEffect:{
+                rotate: 0,
+                stretch: 0,
+                depth: 100,
+                modifire: 2.5,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation:{
+                nextEl: '.seiper-button-next',
+                prevEl: '.seiper-button-prev',
+
+            }
+        });
+    </script>
+
+
+
+
+
+
+
+    <!--Sprak Function-->
+    <!--<div>
+        <input id="input">
+        <button onclick="speack()">Speak</button>
+    </div>
+
+    <script>
+        function speack() {
+            var text = document.getElementById("input").value;
+            var utterance = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(utterance);
+        }
+    </script>-->
+
+
+</body>
+</html>
