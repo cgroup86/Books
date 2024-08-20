@@ -1,14 +1,30 @@
-﻿// TODO - clear the forms when close/ move
-// TODO - when logged in successfully remove the register and show logout button
-// TODO - a 5 second loading page shows at the start of everypage, don't have to be part of the header
-// TODO - NOT ON JS - ON SERVER SIDE - readAuthorsByPage FIX HOW ITS MADE IN DBservices.cs
-const apiStart = `https://localhost:7291/api/`;
+﻿const apiStart = `https://localhost:7291/api/`;
 
-// Handles the login/register forms and buttons
+
+
+$(document).ready(function() {
+  LoginRegisterModalFunc();
+});
+
+
+function checkUserStatus() {
+  const userData = sessionStorage.getItem('userData');
+
+  if (userData) {
+    // logged
+    $('#loginBtn').hide();
+    $('#registerBtn').hide();
+    $('#logoutBtn').show();
+  } else {
+    // not logged
+    $('#loginBtn').show();
+    $('#registerBtn').show();
+    $('#logoutBtn').hide();
+  }
+}
+
 function LoginRegisterModalFunc() {
-  
 
-  // Email Validation
   $("#registerEmail").on("input", function () {
     var pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     var value = $(this).val();
@@ -16,7 +32,6 @@ function LoginRegisterModalFunc() {
     this.setCustomValidity(value.match(pattern) ? "" : message);
   });
 
-  // Name Validation
   $("#registerName").on("input", function () {
     var pattern = /^[a-zA-Z\s]*$/;
     var value = $(this).val();
@@ -24,41 +39,39 @@ function LoginRegisterModalFunc() {
     this.setCustomValidity(value.match(pattern) ? "" : message);
   });
 
-  // Opens the login modal
   $('#loginBtn').click(function() {
     $('#loginModal').show();
   });
 
-  // Opens the registration modal
   $('#registerBtn').click(function() {
     $('#registerModal').show();
   });
 
-  // Closes the modals
-  $('.closeBtn').click(function() {
+  $('#closeLoginBtn').click(function() {
     $('#loginModal').hide();
-    $('#registerModal').hide();
+    $('#loginForm')[0].reset(); 
   });
 
-  // Change form from login to register
+  $('#closeRegisterBtn').click(function() {
+    $('#registerModal').hide();
+    $('#registerForm')[0].reset(); 
+  });
+
   $('#openRegisterModalFooter').click(function() {
     $('#loginModal').hide();
     $('#registerModal').show();
   });
 
-  // Change form from register to login
   $('#openLoginModalFooter').click(function() {
     $('#registerModal').hide();
     $('#loginModal').show();
   });
 
-  // Login submission
   $("#loginForm").submit(function (e) {
     e.preventDefault();
     loginUser($('#loginEmail').val(), $('#loginPassword').val());
   });
 
-  // Login function
   function loginUser(email, password) {
     let api = `${apiStart}Users/Login`;
     const loginData = {
@@ -73,16 +86,8 @@ function LoginRegisterModalFunc() {
     ajaxCall("POST", api, JSON.stringify(loginData), loginSuccess, loginError);
   }
 
-  // Success handler for login
   function loginSuccess(response) {
-    if (response.isActive === false) {
-      Swal.fire({
-        icon: 'error',
-        title: 'User is banned',
-        text: response.error
-      });
-      return;
-    }
+    //console.log(response);
 
     if (response.isAdmin === true) {
       // TODO: Redirect to admin panel
@@ -101,12 +106,26 @@ function LoginRegisterModalFunc() {
       title: 'Success!',
       text: 'Login successful'
     }).then(() => {
-      // TODO: Close the modal - clean the modal
+      $('#loginModal').hide();
+      $('#loginForm')[0].reset();
+      $('#registerBtn').hide();
+      $('#loginBtn').hide();
+      $('#logoutBtn').show();
     });
   }
 
-  // Error handler for login
   function loginError(err) {
+    //console.log(err);
+    ///console.log(err.responseJSON)
+    if (err.responseJSON.error === 'Invalid email or password') {
+      Swal.fire({
+        icon: 'error',
+        title: 'User is banned',
+        text: err.responseJSON.error
+      });
+      return;
+    }
+    
     Swal.fire({
       icon: 'error',
       title: 'Login Failed',
@@ -115,7 +134,6 @@ function LoginRegisterModalFunc() {
     console.log(err);
   }
 
-  // Register submission
   $("#registerForm").submit(function (e) {
     e.preventDefault();
     let api = `${apiStart}Users/Register`;
@@ -132,7 +150,6 @@ function LoginRegisterModalFunc() {
     ajaxCall("POST", api, JSON.stringify(registerData), registerSuccess, registerError);
   });
 
-  // Success handler for registration
   function registerSuccess(response) {
     Swal.fire({
         icon: 'success',
@@ -144,7 +161,6 @@ function LoginRegisterModalFunc() {
     });
   }
 
-  // Error handler for registration
   function registerError(err) {
       Swal.fire({
           icon: 'error',
@@ -152,4 +168,14 @@ function LoginRegisterModalFunc() {
           text: err.responseJSON.error
       });
   }
+  
+  $('#logoutBtn').click(function() {
+    sessionStorage.removeItem('userData');
+    $('#loginBtn').show();
+    $('#registerBtn').show();
+    $('#logoutBtn').hide();
+  });
 }
+
+
+

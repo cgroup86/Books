@@ -10,7 +10,7 @@ CREATE PROCEDURE SP_UserRegister
 		@password NVARCHAR(200)
 AS
 BEGIN
-
+	SET @email = LOWER(@email);
     -- Check if the email already exists
     IF EXISTS (SELECT 1 FROM Users WHERE email = @email)
     BEGIN

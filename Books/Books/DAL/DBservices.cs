@@ -8,6 +8,7 @@ using System.Text;
 using Books.BL;
 using System.Data.Common;
 using System.Net;
+using Microsoft.AspNetCore.Identity;
 
 /// <summary>
 /// DBServices is a class created by me to provides some DataBase Services
@@ -322,7 +323,6 @@ public class DBservices
         cmd.Parameters.AddWithValue("@name", author.Name);
         cmd.Parameters.AddWithValue("@topWork", author.TopWork);
         cmd.Parameters.AddWithValue("@workCount", author.WorkCount);
-        cmd.Parameters.AddWithValue("@key", author.Key);
 
         return cmd;
     }
@@ -456,30 +456,15 @@ public class DBservices
 
         cmd.Parameters.AddWithValue("@BookTitle", book.Title);
         cmd.Parameters.AddWithValue("@price", book.Price);
-        cmd.Parameters.AddWithValue("@publisher", book.Publisher);
-        cmd.Parameters.AddWithValue("@publishedDate", book.PublishedDate);
         cmd.Parameters.AddWithValue("@description", book.Description);
         cmd.Parameters.AddWithValue("@pageNum", book.PageCount);
-        cmd.Parameters.AddWithValue("@averageRating", book.AverageRating);
-        cmd.Parameters.AddWithValue("@ratingsCount", book.RatingsCount);
         cmd.Parameters.AddWithValue("@smallThumbnailUrl", book.SmallThumbnailUrl);
-        cmd.Parameters.AddWithValue("@thumbnailUrl", book.ThumbnailUrl);
         cmd.Parameters.AddWithValue("@lang", book.Language);
         cmd.Parameters.AddWithValue("@previewLink", book.PreviewLink);
-        cmd.Parameters.AddWithValue("@infoLink", book.InfoLink);
-        cmd.Parameters.AddWithValue("@canonicalVolumeLink", book.CanonicalVolumeLink);
         cmd.Parameters.AddWithValue("@isEbook", book.IsEbook);
         cmd.Parameters.AddWithValue("@embeddable", book.Embeddable);
-        cmd.Parameters.AddWithValue("@epubIsAvailable", book.EpubIsAvailable);
-        cmd.Parameters.AddWithValue("@epubDownloadLink", book.EpubDownloadLink);
-        cmd.Parameters.AddWithValue("@pdfIsAvailable", book.PdfIsAvailable);
-        cmd.Parameters.AddWithValue("@pdfDownloadLink", book.PdfDownloadLink);
         cmd.Parameters.AddWithValue("@webReaderLink", book.WebReaderLink);
-        cmd.Parameters.AddWithValue("@textReading", book.TextReading);
-        cmd.Parameters.AddWithValue("@photoReading", book.PhotoReading);
         cmd.Parameters.AddWithValue("@googleBooksId", book.GoogleBooksId);
-        cmd.Parameters.AddWithValue("@etag", book.Etag);
-        cmd.Parameters.AddWithValue("@selfLink", book.SelfLink);
         cmd.Parameters.AddWithValue("@isActive", book.IsActive);
         cmd.Parameters.AddWithValue("@isAvailable", book.IsAvailable);
         cmd.Parameters.AddWithValue("@numOfPrints", book.NumOfPrints);
@@ -652,7 +637,6 @@ public class DBservices
                     Name = dataReader["AuthorName"].ToString(),
                     TopWork = dataReader["topwork"].ToString(),
                     WorkCount = Convert.ToInt32(dataReader["workCount"]),
-                    Key = dataReader["AuthorKey"].ToString(),
                     Image = dataReader["images"].ToString(),
                     Description = dataReader["Description"].ToString()
                 };
@@ -802,33 +786,11 @@ public class DBservices
                     Id = Convert.ToInt32(dataReader["BookId"]),
                     Title = dataReader["BookTitle"].ToString(),
                     Price = Convert.ToInt32(dataReader["price"]),
-                    Publisher = dataReader["publisher"].ToString(),
-                    PublishedDate = dataReader["publishedDate"].ToString(),
-                    Description = dataReader["description"].ToString(),
-                    PageCount = Convert.ToInt32(dataReader["pageNum"]),
-                    AverageRating = Convert.ToInt32(dataReader["averageRating"]),
-                    RatingsCount = Convert.ToInt32(dataReader["ratingsCount"]),
                     SmallThumbnailUrl = dataReader["smallThumbnailUrl"].ToString(),
-                    ThumbnailUrl = dataReader["thumbnailUrl"].ToString(),
-                    Language = dataReader["lang"].ToString(),
                     PreviewLink = dataReader["previewLink"].ToString(),
-                    InfoLink = dataReader["infoLink"].ToString(),
-                    CanonicalVolumeLink = dataReader["canonicalVolumeLink"].ToString(),
                     IsEbook = bool.Parse(dataReader["isEbook"].ToString()),
-                    Embeddable = bool.Parse(dataReader["embeddable"].ToString()),
-                    EpubIsAvailable = bool.Parse(dataReader["epubIsAvailable"].ToString()),
-                    EpubDownloadLink = dataReader["epubDownloadLink"].ToString(),
-                    PdfIsAvailable = bool.Parse(dataReader["pdfIsAvailable"].ToString()),
-                    PdfDownloadLink = dataReader["pdfDownloadLink"].ToString(),
                     WebReaderLink = dataReader["webReaderLink"].ToString(),
-                    TextReading = bool.Parse(dataReader["textReading"].ToString()),
-                    PhotoReading = bool.Parse(dataReader["photoReading"].ToString()),
-                    GoogleBooksId = dataReader["googleBooksId"].ToString(),
-                    Etag = dataReader["etag"].ToString(),
-                    SelfLink = dataReader["selfLink"].ToString(),
-                    IsActive = bool.Parse(dataReader["isActive"].ToString()),
                     IsAvailable = bool.Parse(dataReader["isAvailable"].ToString()),
-                    NumOfPrints = Convert.ToInt32(dataReader["numOfPrints"]),
                 };
                 books.Add(book);
             }
@@ -1074,7 +1036,6 @@ public class DBservices
                     Name = dataReader["AuthorName"].ToString(),
                     TopWork = dataReader["topwork"].ToString(),
                     WorkCount = Convert.ToInt32(dataReader["workCount"]),
-                    Key = dataReader["AuthorKey"].ToString(),
                     Image = dataReader["images"].ToString(),
                     Description = dataReader["Description"].ToString()
                 };
@@ -1117,6 +1078,9 @@ public class DBservices
     }
 
 
+    //--------------------------------------------------------------------------------------------------
+    // This method gets questions num 1
+    //--------------------------------------------------------------------------------------------------
 
     public Question GetQuestion1()
     {
@@ -1154,9 +1118,9 @@ public class DBservices
             }
 
             List<object> allAnswers = new List<object>(wrongAnswers)
-      {
-          correctAnswer
-      };
+            {
+                correctAnswer
+            };
 
             Random rnd = new Random();
             allAnswers = allAnswers.OrderBy(x => rnd.Next()).ToList();
@@ -1184,6 +1148,9 @@ public class DBservices
     }
 
 
+    //--------------------------------------------------------------------------------------------------
+    // This method gets questions num 2
+    //--------------------------------------------------------------------------------------------------
     public Question GetQuestion2()
     {
         SqlConnection con = null;
@@ -1223,9 +1190,9 @@ public class DBservices
             };
 
             List<object> allAnswers = new List<object>(wrongAnswers)
-        {
-            correctAnswer
-        };
+            {
+                correctAnswer
+            };
 
             Random rnd = new Random();
             allAnswers = allAnswers.OrderBy(x => rnd.Next()).ToList();
@@ -1253,7 +1220,215 @@ public class DBservices
         }
     }
 
+    //--------------------------------------------------------------------------------------------------
+    // This method gets questions num 3
+    //--------------------------------------------------------------------------------------------------
 
+    public Question GetQuestion3()
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+
+        cmd = new SqlCommand("spGenerateQuestion3", con);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            dataReader.Read();
+            string questionText = dataReader["Question"].ToString();
+            string correctAnswer = dataReader["CorrectAnswer"].ToString();
+
+            List<object> wrongAnswers = new List<object>();
+
+            if (dataReader.NextResult())
+            {
+                while (dataReader.Read())
+                {
+                    wrongAnswers.Add(dataReader["WrongAnswers"].ToString());
+                }
+            }
+
+            List<object> allAnswers = new List<object>(wrongAnswers)
+            {
+                correctAnswer
+            };
+
+            Random rnd = new Random();
+            allAnswers = allAnswers.OrderBy(x => rnd.Next()).ToList();
+
+            var question = new Question()
+            {
+                QuestionText = questionText,
+                Answers = allAnswers,
+                CorrectAnswer = correctAnswer
+            };
+
+            return question;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets questions num 4
+    //--------------------------------------------------------------------------------------------------
+
+    public Question GetQuestion4()
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+
+        cmd = new SqlCommand("spGenerateQuestion4", con);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            dataReader.Read();
+            string questionText = dataReader["Question"].ToString();
+            string correctAnswer = dataReader["CorrectAnswer"].ToString();
+
+            List<object> wrongAnswers = new List<object>();
+
+            if (dataReader.NextResult())
+            {
+                while (dataReader.Read())
+                {
+                    wrongAnswers.Add(dataReader["WrongAnswers"].ToString());
+                }
+            }
+
+            List<object> allAnswers = new List<object>(wrongAnswers)
+            {
+                correctAnswer
+            };
+
+            Random rnd = new Random();
+            allAnswers = allAnswers.OrderBy(x => rnd.Next()).ToList();
+
+            var question = new Question()
+            {
+                QuestionText = questionText,
+                Answers = allAnswers,
+                CorrectAnswer = correctAnswer
+            };
+
+            return question;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets questions num 5
+    //--------------------------------------------------------------------------------------------------
+    public Question GetQuestion5()
+    {
+        SqlConnection con = null;
+        SqlCommand cmd = null;
+
+        try
+        {
+            con = connect("myProjDB");
+            cmd = new SqlCommand("spGenerateQuestion5", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            dataReader.Read();
+            string questionText = dataReader["Question"].ToString();
+            string correctAnswerTitle = dataReader["CorrectAnswerTitle"].ToString();
+            string correctAnswerImage = dataReader["CorrectAnswerImage"].ToString();
+
+            List<object> wrongAnswers = new List<object>();
+
+            if (dataReader.NextResult())
+            {
+                while (dataReader.Read())
+                {
+                    wrongAnswers.Add(new
+                    {
+                        WrongAnswerTitle = dataReader["WrongAnswersTitle"].ToString(),
+                        WrongAnswerImage = dataReader["WrongAnswersImage"].ToString()
+                    });
+                }
+            }
+
+            var correctAnswer = new
+            {
+                WrongAnswerTitle = correctAnswerTitle,
+                WrongAnswerImage = correctAnswerImage
+            };
+
+            List<object> allAnswers = new List<object>(wrongAnswers)
+            {
+                correctAnswer
+            };
+
+            Random rnd = new Random();
+            allAnswers = allAnswers.OrderBy(x => rnd.Next()).ToList();
+
+            var question = new Question()
+            {
+                QuestionText = questionText,
+                Answers = allAnswers,
+                CorrectAnswer = correctAnswerTitle,
+                CorrectAnswerImage = correctAnswerImage
+            };
+
+            return question;
+        }
+        catch (Exception ex)
+        {
+            throw; // Preserve stack trace
+        }
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+    }
 
     //--------------------------------------------------------------------------------------------------
     // This method is changing the attribute of the variable isActive
@@ -1613,32 +1788,13 @@ public class DBservices
                     Id = Convert.ToInt32(dataReader["BookId"]),
                     Title = dataReader["BookTitle"].ToString(),
                     Price = Convert.ToInt32(dataReader["price"]),
-                    Publisher = dataReader["publisher"].ToString(),
-                    PublishedDate = dataReader["publishedDate"].ToString(),
-                    Description = dataReader["description"].ToString(),
                     PageCount = Convert.ToInt32(dataReader["pageNum"]),
-                    AverageRating = Convert.ToInt32(dataReader["averageRating"]),
-                    RatingsCount = Convert.ToInt32(dataReader["ratingsCount"]),
                     SmallThumbnailUrl = dataReader["smallThumbnailUrl"].ToString(),
-                    ThumbnailUrl = dataReader["thumbnailUrl"].ToString(),
-                    Language = dataReader["lang"].ToString(),
                     PreviewLink = dataReader["previewLink"].ToString(),
-                    InfoLink = dataReader["infoLink"].ToString(),
-                    CanonicalVolumeLink = dataReader["canonicalVolumeLink"].ToString(),
                     IsEbook = bool.Parse(dataReader["isEbook"].ToString()),
-                    Embeddable = bool.Parse(dataReader["embeddable"].ToString()),
-                    EpubIsAvailable = bool.Parse(dataReader["epubIsAvailable"].ToString()),
-                    EpubDownloadLink = dataReader["epubDownloadLink"].ToString(),
-                    PdfIsAvailable = bool.Parse(dataReader["pdfIsAvailable"].ToString()),
-                    PdfDownloadLink = dataReader["pdfDownloadLink"].ToString(),
                     WebReaderLink = dataReader["webReaderLink"].ToString(),
-                    TextReading = bool.Parse(dataReader["textReading"].ToString()),
-                    PhotoReading = bool.Parse(dataReader["photoReading"].ToString()),
-                    GoogleBooksId = dataReader["googleBooksId"].ToString(),
-                    Etag = dataReader["etag"].ToString(),
-                    SelfLink = dataReader["selfLink"].ToString(),
-                    IsActive = bool.Parse(dataReader["isActive"].ToString()),
                 };
+
                 books.Add(book);
             }
 
@@ -1674,6 +1830,338 @@ public class DBservices
 
         // Add parameters for pagination
         cmd.Parameters.AddWithValue("@authorName", authorName);
+
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method is changing the attribute of the variable isActive
+    //--------------------------------------------------------------------------------------------------
+    public int SubmitScore(UserScore userScore)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureSubmitScore("SP_UpsertQuizScore", con, userScore);             // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureSubmitScore(String spName, SqlConnection con, UserScore userScore)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        cmd.Parameters.AddWithValue("@UserId", userScore.UserId);
+        cmd.Parameters.AddWithValue("@Score", userScore.Score);
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets questions num 5
+    //--------------------------------------------------------------------------------------------------
+    public UserScore GetUserAndTopScores(int userId)
+    {
+        SqlConnection con = null;
+        SqlCommand cmd = null;
+
+        try
+        {
+            con = connect("myProjDB");
+            cmd = new SqlCommand("SP_GetUserAndTopScores", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@UserId", userId);
+
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            dataReader.Read();
+            int userID = Convert.ToInt32(dataReader["UserId"]);
+            string userName = dataReader["UserName"].ToString();
+            int score = Convert.ToInt32(dataReader["Score"]);
+
+            List<object> topUserScores = new List<object>();
+
+            if (dataReader.NextResult())
+            {
+                while (dataReader.Read())
+                {
+                    topUserScores.Add(new
+                    {
+                        UserName = dataReader["UserName"].ToString(),
+                        Score = dataReader["Score"].ToString()
+                    });
+                }
+            }
+
+            var userScore = new UserScore()
+            {
+                UserId = userID,
+                Score = score,
+                TopUserScores = topUserScores
+            };
+
+            return userScore;
+        }
+        catch (Exception ex)
+        {
+            throw; // Preserve stack trace
+        }
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+    }
+
+
+    ////--------------------------------------------------------------------------------------------------
+    //// This method to get all books by page
+    ////--------------------------------------------------------------------------------------------------
+
+    public List<Book> readBooksByPage(int pageNumber, int pageSize)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureReadBooks("GetBooksByPaginated", con, pageNumber, pageSize); // create the command
+
+        List<Book> books = new List<Book>();
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            while (dataReader.Read())
+            {
+                Book book = new Book()
+                {
+                    Id = Convert.ToInt32(dataReader["BookId"]),
+                    Title = dataReader["BookTitle"].ToString(),
+                    Price = Convert.ToInt32(dataReader["price"]),
+                    Description = dataReader["description"].ToString(),
+                    SmallThumbnailUrl = dataReader["smallThumbnailUrl"].ToString(),
+                    Language = dataReader["lang"].ToString(),
+                    IsEbook = bool.Parse(dataReader["isEbook"].ToString()),
+                    IsActive = bool.Parse(dataReader["isActive"].ToString()),
+                    IsAvailable = bool.Parse(dataReader["isAvailable"].ToString()),
+                    NumOfPrints = Convert.ToInt32(dataReader["numOfprints"]),
+                };
+
+                books.Add(book);
+            }
+            return books;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for reading authors
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureReadBooks(string spName, SqlConnection con, int pageNumber, int pageSize)
+    {
+        SqlCommand cmd = new SqlCommand();
+
+        cmd.Connection = con;
+        cmd.CommandText = spName;
+        cmd.CommandTimeout = 10;
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@PageNumber", pageNumber);
+        cmd.Parameters.AddWithValue("@PageSize", pageSize);
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method Upadating the Books values
+    //--------------------------------------------------------------------------------------------------
+    public int UPdateBookValues(int bookId, bool isActive, int newPrice, int numberOfPrints)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureUPdateBookValues("UpdateBooksValues", con, bookId, isActive, newPrice, numberOfPrints); // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureUPdateBookValues(String spName, SqlConnection con, int bookId, bool isActive, int newPrice, int numberOfPrints)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        cmd.Parameters.AddWithValue("@bookId", bookId);
+        cmd.Parameters.AddWithValue("@active", isActive);
+        cmd.Parameters.AddWithValue("@newPrice", newPrice);
+        cmd.Parameters.AddWithValue("@numberOfPrints", numberOfPrints);
+
+        return cmd;
+    }
+
+
+
+    //--------------------------------------------------------------------------------------------------
+    // This method Upadating the User is Active value
+    //--------------------------------------------------------------------------------------------------
+    public int UPdateUserValue(int userId, bool isActive)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureUPdateUserValue("UpdateUserIsActiveValue", con, userId, isActive); // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureUPdateUserValue(String spName, SqlConnection con, int userId, bool isActive)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        cmd.Parameters.AddWithValue("@userId", userId);
+        cmd.Parameters.AddWithValue("@active", isActive);
 
         return cmd;
     }

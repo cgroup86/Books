@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Books.BL;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -25,8 +26,15 @@ namespace Books.Controllers
         [HttpGet("get10AuthorsPerPage/{page}/{pageSize}")]
         public IEnumerable<Author> Get(int page, int pageSize)
         {
-            Author author = new Author();
-            return author.ReadAuthorsByPage(page, pageSize);
+            try
+            {
+                Author author = new Author();
+                return author.ReadAuthorsByPage(page, pageSize);
+            }
+            catch (Exception ex)
+            {
+                return new List<Author>();
+            }
         }
 
 
@@ -56,18 +64,32 @@ namespace Books.Controllers
         // PUT api/<ValuesController>/5
         [HttpPut("InsertImages/AuthorName/{name}/AuthorImage/{image}/Description/{description}")]
 
-        public int PutImagesOfAuthors(string name, string image, string description)
+        public IActionResult PutImagesOfAuthors(string name, string image, string description)
         {
-            Author author = new Author();
-            return author.InsertImagesOfAuthor(name, image, description);
+            try
+            {
+                Author author = new Author();
+                return Ok(author.InsertImagesOfAuthor(name, image, description));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
         }
 
         //// GET api/<ValuesController>/5
         [HttpGet("getBooksByAuthorsName/{authorName}")]
         public IEnumerable<Book> Get(string authorName)
         {
-            Author author = new Author();
-            return author.ReadBooksByAuthorName(authorName);
+            try
+            {
+                Author author = new Author();
+                return author.ReadBooksByAuthorName(authorName);
+            }
+            catch (Exception ex)
+            {
+                return new List<Book>();
+            }
         }
 
         //// DELETE api/<ValuesController>/5

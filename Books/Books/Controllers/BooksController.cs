@@ -51,6 +51,44 @@ namespace Books.Controllers
             }
         }
 
+
+        // GET: api/<BooksController>
+        [HttpGet("get10BooksPerPage/{pageNumber}/{pageSize}")]
+        public IActionResult Get(int pageNumber, int pageSize)
+        {
+            try
+            {
+                Book book = new Book();
+                // Get the paged books and total record count
+                var books = book.ReadAllBooks(pageNumber, pageSize);
+
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                //return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
+
+
+
+        [HttpPut("UpdateBookValuesById/book Id/{bookId}/Is Active/{isActive}/price/{newPrice}/NumberOfPrints/{numberOfPrints}")]
+        public IActionResult UpdateCourseIsActiveAndTitle(int bookId, bool isActive, int newPrice, int numberOfPrints)
+        {
+            try
+            {
+                Book book = new Book();
+                book.UpdateBooksValues(bookId, isActive, newPrice, numberOfPrints);
+                return Ok(new { message = "Course with id: " + bookId + " isActive status and name has been updated successfully" });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
         //// GET: api/<BooksController>
         //[HttpGet]
         //public IEnumerable<string> Get()

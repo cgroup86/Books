@@ -1,186 +1,403 @@
-$('#showBooksButtonForDataTable').click(function () {
-  //getCoursesToTable();
-  $('#pForm').show();
-  $(this).hide();
- // $('#hideCoursesButtonForDataTable').show();
-});
-//$('#hideCoursesButtonForDataTable').click(function () {
-//    $('#pForm').hide();
-//    $(this).hide();
-//    $('#showCoursesButtonForDataTable').show();
-//});
-
-
-
+const apiStart = 'https://localhost:7291/api';
+let currentPage = 1; // Start from the first page
+const pageSize = 100; // Number of authors per page
 $(document).ready(function () {
-  getFromServer(); // Fetch data and render tables
 
+    getFromServer();
 });
-//---------------------------------------------------------------------------------------------------------------------------------------
 
 function getFromServer() {
-  console.log("Hi from getFromServer");
 
-  // Define the API URLs
-  const userId = 1; // Replace with dynamic userId if needed
-  const booksApi = `https://localhost:7291/api/PersonalLibraries/BooksToRead/UserId/${userId}`;
-  const booksReadApi = `https://localhost:7291/api/PersonalLibraries/BooksRead/UserId/${userId}`;
-  const booksPurchasedApi = `https://localhost:7291/api/PersonalLibraries/BooksPurchased/UserId/${userId}`;
+    // Define the API URLs
+    const booksApi = `${apiStart}/Books/get10BooksPerPage/${currentPage}/${pageSize}`;
+    const authorsApi = `${apiStart}/Authors/get10AuthorsPerPage/${currentPage}/${pageSize}`;
+    const usersApi = `${apiStart}/Users`;
+    // Fetch Books 
+    ajaxCall("GET", booksApi, "", function (books) {
+        renderBooksTable('#booksTable', books, "Books");
+    }, getBooksECB);
 
-  // Fetch Books To Read
-  // Fetch Books To Read
-  ajaxCall("GET", booksApi, "", function (books) {
-      console.log("Books To Read:", books); // Log response
-     // renderTable('#booksToReadTable', booksToRead, "Books to Read");
-  }, getBooksECB);
 
-  //// Fetch Books Read
-  //ajaxCall("GET", booksReadApi, "", function (booksRead) {
-  //    console.log("Books Read:", booksRead); // Log response
-  //    renderTable('#booksReadTable', booksRead, "Books Read");
-  //}, getBooksECB);
 
-  //// Fetch Books Purchased
-  //ajaxCall("GET", booksPurchasedApi, "", function (booksPurchased) {
-  //    console.log("Books Purchased:", booksPurchased); // Log response
-  //    renderTable('#booksPurchasedTable', booksPurchased, "Books Purchased");
-  //}, getBooksECB);
+    //// Fetch Authors
+    ajaxCall("GET", authorsApi, "", function (authors) {
+        console.log("Authors:", authors);
+        renderAuthorssTable('#authorsTable', authors, "Authors");
+    }, getBooksECB);
+
+    //// Fetch Books Purchased
+    ajaxCall("GET", usersApi, "", function (users) {
+        console.log("Users:", users);
+        renderUsersTable('#usersTable', users, "Users");
+    }, getBooksECB);
 }
+
 function getBooksECB(err) {
-  console.log(err);
+    console.log(err);
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------------
+function renderBooksTable(tableId, tableData, title) {
+    try {
+        if (!$.fn.DataTable.isDataTable(tableId)) {
+            $(tableId).DataTable({
+                data: tableData,
+                drawCallback: function () {
+                    var table = this.api();
+                    var pageInfo = table.page.info();
+                    var pages = pageInfo.pages;
 
-function renderTable(tableId, tableData, title) {
-  try {
-      if (!$.fn.DataTable.isDataTable(tableId)) {
-          $(tableId).DataTable({
-              data: tableData,
-              pageLength: 5,
-              columns: [
-                  {
-                      data: "smallThumbnailUrl",
-                      render: function (data, type, row, meta) {
-                          return '<img src="' + data + '" alt="Book Thumbnail" style="width: 50px; height: auto;">';
-                      },
-                      title: "Cover"
-                  },
-                  {
-                      data: "bookTitle",
-                      title: "Title"
-                  },
-                  {
-                      data: "isEbook",
-                      render: function (data, type, row, meta) {
-                          return data === true ? 'eBook' : 'Physical';
-                      },
-                      title: "Type"
-                  },
-                  {
-                      data: "webReaderLink",
-                      render: function (data, type, row, meta) {
-                          return row.isEbook && data ? '<a href="' + data + '" target="_blank">Read online</a>' : 'N/A';
-                      },
-                      title: "Read Online"
-                  },
-                  {
-                      render: function (data, type, row, meta) {
-                          let dataBook = "data-bookId='" + row.bookId + "'";
-                          let status = row.status ? 'HaveRead' : 'ToRead';
-                          let toggleStatus = row.status ? 'Mark as ToRead' : 'Mark as HaveRead';
-                          return `<button type='button' class='statusBtn btn btn-primary' ${dataBook} data-status='${row.status}'>${toggleStatus}</button>`;
+                    $('.paginate_button.next:not(.disabled)', table.table().container())
+                        .on('click', function () {
+                            currentPage++;
+                            getFromServer(currentPage, pageSize);
+                        });
 
-                          // let dataBook = "data-bookId='" + row.id + "'";
-                          // let status = row.status ? 'HaveRead' : 'ToRead';
-                          // let toggleStatus = row.status ? 'Mark as ToRead' : 'Mark as HaveRead';
-                          // let statusButton = "<button type='button' class='statusBtn btn btn-primary' " + dataBook + " data-status='" + row.status + "'>" + toggleStatus + "</button>";
-                          // return statusButton;
+                    $('.paginate_button.previous:not(.disabled)', table.table().container())
+                        .on('click', function () {
+                            if (currentPage > 1) {
+                                currentPage--;
+                                getFromServer(currentPage, pageSize);
+                            }
+                        });
+                },
+                columns: [
 
-                          // let dataBook = "data-bookId='" + row.bookId + "'";
-                          // let toggleButton = row.status ? 
-                          //     `<button type='button' class='btn btn-secondary' ${dataBook} data-action='markAsToRead'>Mark as To Read</button>` : 
-                          //     `<button type='button' class='btn btn-primary' ${dataBook} data-action='markAsRead'>Mark as Read</button>`;
-                          // return toggleButton;
-                      },
-                      title: "Actions"
-                  }
-              ],
+                    {
+                        data: "smallThumbnailUrl",
+                        render: function (data, type, row, meta) {
+                            return '<img src="' + data + '" alt="Book Thumbnail" style="width: 50px; height: auto;">';
+                        },
+                        title: "Cover"
+                    },
+                    {
+                        data: "id",
+                        title: "ID"
+                    },
+                    {
+                        data: "title",
+                        title: "Title"
+                    },
+                    {
+                        data: "price",
+                        title: "Price"
+                    },
+                    {
+                        data: "language",
+                        title: "Language"
+                    },
+                    {
+                        data: "isEbook",
+                        render: function (data, type, row, meta) {
+                            return data === 'ebook' ? 'eBook' : 'Physical';
+                        },
+                        title: "Type"
+                    },
+                    {
+                        data: "isActive",
+                        render: function (data, type, row, meta) {
+                            return data ? 'Yes' : 'No';
+                        },
+                        title: "Active"
+                    },
+                    {
+                        data: "isAvailable",
+                        render: function (data, type, row, meta) {
+                            return data ? 'Yes' : 'No';
+                        },
+                        title: "Available"
+                    },
+                    {
+                        data: "numOfPrints",
+                        title: "Prints"
+                    },
 
-          });
+                    {
+                        data: null,
+                        defaultContent: '<button class="btn DescriptionModalBtn">Description</button>',
+                        title: "Description",
+                        orderable: false
+                    },
+                    {
+                        data: null,
+                        defaultContent: '<button class="btn ChangeBookValuesModalBtn">Edit</button>',
+                        title: "Change Values",
+                        orderable: false
+                    },
+                ],
+                columnDefs: [{
+                    targets: 0,
+                    orderable: false
+                }]
+            });
 
-          // Bind button events for the newly rendered table
-          buttonEvents(tableId);
-      }
-  }
-  catch (err) {
-      alert(err);
-  }
-
+        } else {
+            $(tableId).DataTable().clear().rows.add(tableData).draw();
+        }
+    } catch (err) {
+        alert(err);
+    }
 }
-// else {
-//   // Update existing DataTable if needed
-//   $(tableId).DataTable().clear().rows.add(tableData).draw();
-// }
 
-function buttonEvents(tableId) {
-  $(document).on('click', '.statusBtn', function () {
-      let bookId = $(this).data('bookid');
-      let currentStatus = $(this).data('status') === 'true';
-      toggleBookStatus(bookId, !currentStatus);
-  });
+
+$(document).on('click', 'button.DescriptionModalBtn', function () {///////////////// show books description
+    var table = $('#booksTable').DataTable();
+    var rowData = table.row($(this).parents('tr')).data();
+    $('#modalLabel').text('Details for ID: ' + rowData.id); 
+    $('#modalContent').html('<p><strong>Title:</strong> ' + rowData.title + '</p>' +
+        '<p><strong>Prints:</strong> ' + rowData.description + '</p>');
+    $('#actionModal').modal('show');
+});
+
+
+
+$(document).on('click', 'button.ChangeBookValuesModalBtn', function () {
+    var table = $('#booksTable').DataTable();
+    var rowData = table.row($(this).parents('tr')).data();
+
+    // Update the modal label with the selected row's ID
+    $('#modalLabel').text('Details for ID: ' + rowData.id);
+
+    $('#modalContent').html(
+        '<div class="form-group">' +
+        '<label for="isActiveInput">Is Active:</label>' +
+        '<input type="checkbox" class="form-control" id="isActiveInput" ' + (rowData.isActive ? 'checked' : '') + '>' +
+        '</div>' +
+        '<div class="form-group">' +
+        '<label for="priceInput">Price:</label>' +
+        '<input type="text" class="form-control" id="priceInput" value="' + rowData.price + '">' +
+        '</div>' +
+        '<div class="form-group">' +
+        '<label for="printsInput">Number of Prints:</label>' +
+        '<input type="text" class="form-control" id="printsInput" value="' + rowData.numOfPrints + '">' +
+        '</div>' +
+        '<button id="saveBookChangesBtn" class="btn btn-primary">Save</button>'
+    );
+
+    // Show the modal
+    $('#actionModal').modal('show');
+});
+
+$(document).on('click', '#saveBookChangesBtn', function () {
+    var bookId = $('#modalLabel').text().match(/\d+/)[0];
+    var updatedIsActive = $('#isActiveInput').is(':checked');
+    var updatedPrice = $('#priceInput').val();
+    var updatedPrints = $('#printsInput').val();
+    bookId = parseInt(bookId);
+
+    putBooksChangesToServer(bookId, updatedIsActive, updatedPrice, updatedPrints);
+
+    // Close the modal after saving changes (if applicable)
+    $('#actionModal').modal('hide');
+});
+
+
+function putBooksChangesToServer(bookId, isActive,price,prints) {
+    console.log("Fetching authors from server");
+    let api = `${apiStart}/Books/UpdateBookValuesById/book Id/${bookId}/Is Active/${isActive}/price/${price}/NumberOfPrints/${prints}`;
+    ajaxCall("PUT", api, "", updateBooksSCB, updateBooksECB);
 }
 
-// Function to toggle book status and update DataTables
-function toggleBookStatus(bookId, newStatus) {
-  // Find the book and update its status
-  let allBooks = [...booksToReadData, ...booksReadData, ...booksPurchasedData];
-  let book = allBooks.find(b => b.bookId == bookId);
+function updateBooksSCB(status) {
+    $('#booksTable').DataTable().clear();
+    getFromServer();
+}
 
-  if (book) {
-      book.status = newStatus;
+function updateBooksECB(err) {
+    console.log(err);
+}
 
-      // Update the status button in the DataTables
-      $('#booksToReadTable').DataTable().clear().rows.add(booksToReadData).draw();
-      $('#booksReadTable').DataTable().clear().rows.add(booksReadData).draw();
-      $('#booksPurchasedTable').DataTable().clear().rows.add(booksPurchasedData).draw();
 
-      // Optionally, you may want to make an API call here to persist the status change
-  }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function renderAuthorssTable(tableId, tableData, title) {
+    console.log("data To Read:", tableData);
+    try {
+        if (!$.fn.DataTable.isDataTable(tableId)) {
+            $(tableId).DataTable({
+                data: tableData,
+                drawCallback: function () {
+                    var table = this.api();
+                    var pageInfo = table.page.info();
+
+                    $('.paginate_button.next:not(.disabled)', table.table().container())
+                        .on('click', function () {
+                            var nextPageIndex = pageInfo.page;
+                            currentPage++;
+                            $('#numOfPages').text("Page " + currentPage);
+                            getFromServer(currentPage, pageSize);
+                        });
+
+                    // Event handler for page number buttons
+                    $('.paginate_button:not(.next, .previous)', table.table().container())
+                        .on('click', function () {
+                            var clickedPageIndex = $(this).text() - 1; // Adjust to zero-based index
+
+                        });
+
+                    // Event handler for the "Previous" button
+                    $('.paginate_button.previous:not(.disabled)', table.table().container())
+                        .on('click', function () {
+                            if (currentPage > 1) {
+                                currentPage--;
+                                $('#numOfPages').text("Page " + currentPage);
+                                getFromServer(currentPage, pageSize);
+                            }
+                        });
+                },
+                columns: [
+                    {
+                        data: "image",
+                        render: function (data, type, row, meta) {
+                            return '<img src="' + data + '" alt="Book Thumbnail" style="width: 50px; height: auto;">';
+                        },
+                        title: "Cover"
+                    },
+                    {
+                        data: "name",
+                        title: "Name"
+                    },
+                    {
+                        data: "topWork",
+                        title: "Top Work"
+                    },
+                    {
+                        data: "workCount",
+                        title: "Work Count"
+                    },
+                    {
+                        data: "description",
+                        title: "Description"
+                    }, 
+
+                ],
+            });
+
+            //// Bind button events for the newly rendered table
+            //buttonEvents(tableId);
+        } else {
+            // Update existing DataTable if needed
+            $(tableId).DataTable().clear().rows.add(tableData).draw();
+        }
+    } catch (err) {
+        alert(err);
+    }
 }
 
 
 
-// function toggleBookStatus(bookId, newStatus) {
-//   // Define the API URL for updating the book status
-//   const apiUrl = `https://localhost:7291/api/PersonalLibraries/UpdateBookStatus/UserId/1/BookId/${bookId}/NewStatus/${newStatus}`;
-//   console.log(apiUrl);
-//   // Make the API call to update the book status
-//   $.ajax({
-//     url: apiUrl,
-//     type: 'put', // Assuming the API uses POST for updates
-//     success: function(response) {
-//       // Update the status in the DataTable
-//       updateDataTables();
-//     },
-//     error: function(xhr, status, error) {
-//       console.error('Error updating book status:', status, error);
-//     }
-//   });
-// }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function renderUsersTable(tableId, tableData, title) {
+    console.log("data To Read:", tableData);
+    try {
+        if (!$.fn.DataTable.isDataTable(tableId)) {
+            $(tableId).DataTable({
+                data: tableData,
+                drawCallback: function () {
+                    var table = this.api();
+                    var pageInfo = table.page.info();
 
-// function updateDataTables() {
-//   // Re-fetch the data from the server and update the DataTables
-//   getFromServer(); // This function will re-render the DataTables with updated data
-// }
+                    $('.paginate_button.next:not(.disabled)', table.table().container())
+                        .on('click', function () {
+                            var nextPageIndex = pageInfo.page;
+                            currentPage++;
+                            $('#numOfPages').text("Page " + currentPage);
+                            getFromServer(currentPage, pageSize);
+                        });
 
-// function buttonEvents(tableId) {
-//   $(document).on('click', '.btn', function() {
-//     let bookId = $(this).data('bookid');
-//     let currentStatus = $(this).data('action') === 'markAsRead';
-//     let newStatus = !currentStatus;
+                    // Event handler for page number buttons
+                    $('.paginate_button:not(.next, .previous)', table.table().container())
+                        .on('click', function () {
+                            var clickedPageIndex = $(this).text() - 1; // Adjust to zero-based index
 
-//     // Toggle the book status
-//     toggleBookStatus(bookId, newStatus);
-//   });
-// }
+                        });
+
+                    // Event handler for the "Previous" button
+                    $('.paginate_button.previous:not(.disabled)', table.table().container())
+                        .on('click', function () {
+                            if (currentPage > 1) {
+                                currentPage--;
+                                $('#numOfPages').text("Page " + currentPage);
+                                getFromServer(currentPage, pageSize);
+                            }
+                        });
+                },
+                columns: [
+                    {
+                        data: "id",
+                        title: "ID"
+                    },
+                    {
+                        data: "email",
+                        title: "Email"
+                    },
+                    {
+                        data: "name",
+                        title: "Name"
+                    },
+                    {
+                        data: "isActive",
+                        title: "Is Active"
+                    },
+                    {
+                        data: null,
+                        defaultContent: '<button class="btn ChangeUserStatusModalBtn">Edit</button>',
+                        title: "Change Values",
+                        orderable: false
+                    }, 
+                ],
+            });
+
+            //// Bind button events for the newly rendered table
+            //buttonEvents(tableId);
+        } else {
+            // Update existing DataTable if needed
+            $(tableId).DataTable().clear().rows.add(tableData).draw();
+        }
+    } catch (err) {
+        alert(err);
+    }
+}
+$(document).on('click', 'button.ChangeUserStatusModalBtn', function () {
+    var table = $('#usersTable').DataTable();
+    var rowData = table.row($(this).parents('tr')).data();
+
+    // Update the modal label with the selected row's ID
+    $('#modalLabel').text('Details for ID: ' + rowData.id);
+
+    $('#modalContent').html(
+        '<div class="form-group">' +
+        '<label for="isActiveInput">Is Active:</label>' +
+        '<input type="checkbox" class="form-control" id="isActiveInput" ' + (rowData.isActive ? 'checked' : '') + '>' +
+        '</div>' +
+        '<button id="saveUserChangesBtn" class="btn btn-primary">Save</button>'
+    );
+
+    // Show the modal
+    $('#actionModal').modal('show');
+});
+
+$(document).on('click', '#saveUserChangesBtn', function () {
+    var userId = $('#modalLabel').text().match(/\d+/)[0];
+    var updatedIsActive = $('#isActiveInput').is(':checked');
+    bookId = parseInt(userId);
+
+    putUserChangesToServer(userId, updatedIsActive);
+
+    // Close the modal after saving changes (if applicable)
+    $('#actionModal').modal('hide');
+});
+
+
+function putUserChangesToServer(userId, isActive) {
+    console.log("Fetching authors from server");
+    let api = `${apiStart}/Users/UpdateUserValuesById/user Id/${userId}/Is Active/${isActive}`;
+    ajaxCall("PUT", api, "", updateUsersSCB, updateUsersECB);
+}
+
+function updateUsersSCB(status) {
+    $('#usersTable').DataTable().clear();
+    getFromServer();
+}
+
+function updateUsersECB(err) {
+    console.log(err);
+}

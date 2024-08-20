@@ -9,109 +9,57 @@ namespace Books.BL
         string title; // The name of the book
         int price; // Price of the book
         List<string>? authors; // The names of the authors
-        string? publisher;
-        string? publishedDate;
         string? description;
         int pageCount; // The number of pages in the book.
         List<string>? categories;
-        // TODO - check if the rating needed
-        int? averageRating;
-        int ratingsCount;
-
         string smallThumbnailUrl;
-        string thumbnailUrl;
         string language;
-        // TODO - check if the 3 links needed
         string previewLink;
-        string infoLink;
-        string canonicalVolumeLink; 
-
         bool isEbook; // True = digital, false = physical
-
-        // For digital
         bool embeddable;
-        bool epubIsAvailable;
-        string? epubDownloadLink;
-        bool pdfIsAvailable;
-        string? pdfDownloadLink; 
         string webReaderLink;
-        bool textReading; // If book available in text format
-        bool photoReading; // If book available in photo format
-
-        // Id and things on google api books
         string googleBooksId;
-        string etag;
-        string? selfLink;
 
         bool? isActive;
         bool isAvailable; // For physical book, 1 available for sale, 0 not available for sale
         int numOfPrints; // related physical only
         public Book() { }
-        public Book(int id, string title, int price, List<string>? authors, string? publisher, string? publishedDate, string? description, int pageCount, List<string>? categories, int? averageRating, int ratingsCount, string smallThumbnailUrl, string thumbnailUrl, string language, string previewLink, string infoLink, string canonicalVolumeLink, bool isEbook, bool embeddable, bool epubIsAvailable, string? epubDownloadLink, bool pdfIsAvailable, string? pdfDownloadLink, string webReaderLink, bool textReading, bool photoReading, string googleBooksId, string etag, string? selfLink, bool? isActive, bool isAvailable, int numOfPrints)
+
+        public Book(int id, string title, int price, List<string>? authors, string? description, int pageCount, List<string>? categories, string smallThumbnailUrl, string language, string previewLink, bool isEbook, bool embeddable, string webReaderLink, string googleBooksId, bool? isActive, bool isAvailable, int numOfPrints)
         {
-            this.Id = id;
-            this.Title = title;
-            this.Price = price;
-            this.Authors = authors;
-            this.Publisher = publisher;
-            this.PublishedDate = publishedDate;
-            this.Description = description;
-            this.PageCount = pageCount;
-            this.Categories = categories;
-            this.AverageRating = averageRating;
-            this.RatingsCount = ratingsCount;
-            this.SmallThumbnailUrl = smallThumbnailUrl;
-            this.ThumbnailUrl = thumbnailUrl;
-            this.Language = language;
-            this.PreviewLink = previewLink;
-            this.InfoLink = infoLink;
-            this.CanonicalVolumeLink = canonicalVolumeLink;
-            this.IsEbook = isEbook;
-            this.Embeddable = embeddable;
-            this.EpubIsAvailable = epubIsAvailable;
-            this.EpubDownloadLink = epubDownloadLink;
-            this.PdfIsAvailable = pdfIsAvailable;
-            this.PdfDownloadLink = pdfDownloadLink;
-            this.WebReaderLink = webReaderLink;
-            this.TextReading = textReading;
-            this.PhotoReading = photoReading;
-            this.GoogleBooksId = googleBooksId;
-            this.Etag = etag;
-            this.SelfLink = selfLink;
-            this.IsActive = isActive;
-            this.IsAvailable = isAvailable;
-            this.NumOfPrints = numOfPrints;
+            this.id = id;
+            this.title = title;
+            this.price = price;
+            this.authors = authors;
+            this.description = description;
+            this.pageCount = pageCount;
+            this.categories = categories;
+            this.smallThumbnailUrl = smallThumbnailUrl;
+            this.language = language;
+            this.previewLink = previewLink;
+            this.isEbook = isEbook;
+            this.embeddable = embeddable;
+            this.webReaderLink = webReaderLink;
+            this.googleBooksId = googleBooksId;
+            this.isActive = isActive;
+            this.isAvailable = isAvailable;
+            this.numOfPrints = numOfPrints;
         }
 
         public int Id { get => id; set => id = value; }
         public string Title { get => title; set => title = value; }
         public int Price { get => price; set => price = value; }
         public List<string>? Authors { get => authors; set => authors = value; }
-        public string? Publisher { get => publisher; set => publisher = value; }
-        public string? PublishedDate { get => publishedDate; set => publishedDate = value; }
         public string? Description { get => description; set => description = value; }
         public int PageCount { get => pageCount; set => pageCount = value; }
         public List<string>? Categories { get => categories; set => categories = value; }
-        public int? AverageRating { get => averageRating; set => averageRating = value; }
-        public int RatingsCount { get => ratingsCount; set => ratingsCount = value; }
         public string SmallThumbnailUrl { get => smallThumbnailUrl; set => smallThumbnailUrl = value; }
-        public string ThumbnailUrl { get => thumbnailUrl; set => thumbnailUrl = value; }
         public string Language { get => language; set => language = value; }
         public string PreviewLink { get => previewLink; set => previewLink = value; }
-        public string InfoLink { get => infoLink; set => infoLink = value; }
-        public string CanonicalVolumeLink { get => canonicalVolumeLink; set => canonicalVolumeLink = value; }
         public bool IsEbook { get => isEbook; set => isEbook = value; }
         public bool Embeddable { get => embeddable; set => embeddable = value; }
-        public bool EpubIsAvailable { get => epubIsAvailable; set => epubIsAvailable = value; }
-        public string? EpubDownloadLink { get => epubDownloadLink; set => epubDownloadLink = value; }
-        public bool PdfIsAvailable { get => pdfIsAvailable; set => pdfIsAvailable = value; }
-        public string? PdfDownloadLink { get => pdfDownloadLink; set => pdfDownloadLink = value; }
         public string WebReaderLink { get => webReaderLink; set => webReaderLink = value; }
-        public bool TextReading { get => textReading; set => textReading = value; }
-        public bool PhotoReading { get => photoReading; set => photoReading = value; }
         public string GoogleBooksId { get => googleBooksId; set => googleBooksId = value; }
-        public string Etag { get => etag; set => etag = value; }
-        public string? SelfLink { get => selfLink; set => selfLink = value; }
         public bool? IsActive { get => isActive; set => isActive = value; }
         public bool IsAvailable { get => isAvailable ; set => isAvailable = value; }
         public int NumOfPrints { get => numOfPrints; set => numOfPrints = value; }
@@ -119,32 +67,16 @@ namespace Books.BL
         public void EnsureDefaults()
         {
             Title = Title ?? string.Empty;
-            Publisher = Publisher ?? string.Empty;
-            PublishedDate = PublishedDate ?? string.Empty;
             Description = Description ?? string.Empty;
             SmallThumbnailUrl = SmallThumbnailUrl ?? string.Empty;
-            ThumbnailUrl = ThumbnailUrl ?? string.Empty;
             Language = Language ?? string.Empty;
             PreviewLink = PreviewLink ?? string.Empty;
-            InfoLink = InfoLink ?? string.Empty;
-            CanonicalVolumeLink = CanonicalVolumeLink ?? string.Empty;
-            EpubDownloadLink = EpubDownloadLink ?? string.Empty;
-            PdfDownloadLink = PdfDownloadLink ?? string.Empty;
             WebReaderLink = WebReaderLink ?? string.Empty;
             GoogleBooksId = GoogleBooksId ?? string.Empty;
-            Etag = Etag ?? string.Empty;
-            SelfLink = SelfLink ?? string.Empty;
-
             Price = Price == null ? 0 : Price;
             PageCount = PageCount == null ? 0 : PageCount;
-            AverageRating = AverageRating == null ? 0 : AverageRating;
-            RatingsCount = RatingsCount == null ? 0 : RatingsCount;
             IsEbook = IsEbook == null ? false : IsEbook;
             Embeddable = Embeddable == null ? false : Embeddable;
-            EpubIsAvailable = EpubIsAvailable == null ? false : EpubIsAvailable;
-            PdfIsAvailable = PdfIsAvailable == null ? false : PdfIsAvailable;
-            TextReading = TextReading == null ? false : TextReading;
-            PhotoReading = PhotoReading == null ? false : PhotoReading;
             IsActive = IsActive == null ? true : IsActive;
 
             Categories = Categories ?? new List<string>();
@@ -183,11 +115,37 @@ namespace Books.BL
                 DBservices dBservices = new DBservices();
                 List<Book> books = dBservices.GetPagedBooks(isEbook, pageNumber, pageSize, out totalRecords, fetchTotalCount);
                 // Loop through each book and assign authors
-                foreach (Book book in books)
-                {
-                    book.Authors = dBservices.GetAuthorsForBook(book.Id);
-                }
+                //foreach (Book book in books)
+                //{
+                //    book.Authors = dBservices.GetAuthorsForBook(book.Id);
+                //}
                 return books;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<Book> ReadAllBooks(int pageNumber, int pageSize)
+        {
+            try
+            {
+                DBservices dbservices = new DBservices();
+                return dbservices.readBooksByPage(pageNumber, pageSize);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public int UpdateBooksValues(int bookId, bool isActive, int newPrice, int numberOfPrints)
+        {
+            try
+            {
+                DBservices dbservices = new DBservices();
+                return dbservices.UPdateBookValues(bookId, isActive, newPrice, numberOfPrints);
             }
             catch (Exception ex)
             {

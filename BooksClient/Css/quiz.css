@@ -1,0 +1,101 @@
+body {
+  background-color: #ffffff;
+  background-image: url("");
+  background-attachment: fixed;
+  background-size: cover;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+}
+
+.quiz-container {
+  max-width: 600px;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.timer {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.question-container {
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.form-check {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.form-check-input {
+  margin-right: 10px; 
+}
+
+.form-check-label {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.answer-image {
+  width: 25px; 
+  height: 30px;
+  margin-right: 10px; 
+}
+
+.btn-submit,
+.btn-lg,
+.showScoresBtn {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  margin-top: 13px;
+}
+
+@media (max-width: 768px) {
+  .quiz-container {
+      padding: 15px;
+  }
+
+  h3 {
+      font-size: 20px;
+  }
+
+  .form-check-label {
+      font-size: 16px;
+  }
+
+  .answer-image {
+      width: 16px;
+      height: 16px;
+  }
+
+  .btn-submit,
+  .btn-lg {
+      font-size: 16px;
+      padding: 12px;
+  }
+}
+
+
+

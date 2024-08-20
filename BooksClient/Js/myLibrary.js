@@ -3,33 +3,29 @@ let booksReadData = [];
 let booksPurchasedData = [];
 
 $(document).ready(function() {
-  getFromServer(); // Fetch data and render tables
+  getFromServer(); 
 });
 
 function getFromServer() {
   console.log("Hi from getFromServer");
 
-  // Define the API URLs
-  const userId = 1; // Replace with dynamic userId if needed
+  const userId = 1; 
   const booksToReadApi = `https://localhost:7291/api/PersonalLibraries/BooksToRead/UserId/${userId}`;
   const booksReadApi = `https://localhost:7291/api/PersonalLibraries/BooksRead/UserId/${userId}`;
   const booksPurchasedApi = `https://localhost:7291/api/PersonalLibraries/BooksPurchased/UserId/${userId}`;
   
-  // Fetch Books To Read
   ajaxCall("GET", booksToReadApi, "", function(booksToRead) {
       console.log("Books To Read:", booksToRead); 
       booksToReadData = booksToRead;
       renderTable('#booksToReadTable', booksToRead, "Books to Read");
   }, getBooksECB);
   
-  // Fetch Books Read
   ajaxCall("GET", booksReadApi, "", function(booksRead) {
       console.log("Books Read:", booksRead); 
       booksReadData = booksRead;
       renderTable('#booksReadTable', booksRead, "Books Read");
   }, getBooksECB);
   
-  // Fetch Books Purchased
   ajaxCall("GET", booksPurchasedApi, "", function(booksPurchased) {
       console.log("Books Purchased:", booksPurchased); 
       booksPurchasedData = booksPurchased;
@@ -85,10 +81,8 @@ function renderTable(tableId, tableData, title) {
           ],
       });
 
-      // Bind button events for the newly rendered table
       buttonEvents(tableId);
     } else {
-      // Update existing DataTable if needed
       $(tableId).DataTable().clear().rows.add(tableData).draw();
     }
   } catch (err) {
@@ -102,7 +96,6 @@ function buttonEvents(tableId) {
     let currentStatus = $(this).data('status') === 'true';
     let newStatus = !currentStatus;
     
-    // Update the status on the server
     updateBookStatus(bookId, newStatus);
   });
 }
@@ -112,22 +105,18 @@ function updateBookStatus(bookId, newStatus) {
 
   $.ajax({
     url: apiUrl,
-    type: 'PUT', // Use 'PUT' for updating status
+    type: 'PUT', 
     success: function(response) {
-      // Update DataTables based on the current book status
       if (newStatus) {
-        // Move book from ToRead to Read
         moveBook('#booksToReadTable', '#booksReadTable', bookId, newStatus);
       } else {
-        // Move book from Read to ToRead
         moveBook('#booksReadTable', '#booksToReadTable', bookId, newStatus);
       }
       
-      // Optionally update the Purchased table if needed
       updatePurchasedTable(bookId, newStatus);
     },
-    error: function(xhr, status, error) {
-      console.error('Error updating book status:', status, error);
+    error: function(err) {
+      console.error('Error updating book:', err);
     }
   });
 }
@@ -136,21 +125,17 @@ function moveBook(fromTableId, toTableId, bookId, newStatus) {
   let fromTable = $(fromTableId).DataTable();
   let toTable = $(toTableId).DataTable();
 
-  // Find the book in the source table
   let bookData = fromTable.row(function(idx, data, node) {
     return data.bookId === bookId;
   }).data();
 
   if (bookData) {
-    // Remove the book from the source table
     fromTable.row(function(idx, data, node) {
       return data.bookId === bookId;
     }).remove().draw();
 
-    // Add the book to the target table
     toTable.row.add(bookData).draw();
 
-    // Update the button text and data-status attribute
     updateButtonStatus(bookId, newStatus);
   }
 }
@@ -159,8 +144,7 @@ function updateButtonStatus(bookId, newStatus) {
   let buttonText = newStatus ? 'Mark as ToRead' : 'Mark as HaveRead';
   let buttonStatus = newStatus ? 'true' : 'false';
 
-  // Update the button text and status in both tables
-  ['#booksToReadTable', '#booksReadTable'].forEach(tableId => {
+  ['#booksToReadTable', '#booksReadTable', '#booksPurchasedTable'].forEach(tableId => {
     $(tableId).find(`button[data-bookid='${bookId}']`)
       .text(buttonText)
       .data('status', buttonStatus);
@@ -168,6 +152,20 @@ function updateButtonStatus(bookId, newStatus) {
 }
 
 function updatePurchasedTable(bookId, newStatus) {
-  // Fetch the updated data if needed or handle changes locally
-  // Example: if needed, you could fetch and update the Purchased table similarly
+  let purchasedTable = $('#booksPurchasedTable').DataTable();
+
+  let bookData = purchasedTable.row(function(idx, data, node) {
+    return data.bookId === bookId;
+  }).data();
+
+  if (bookData) {
+    bookData.status = newStatus;
+
+    purchasedTable.row(function(idx, data, node) {
+      return data.bookId === bookId;
+    }).data(bookData).draw();
+
+    updateButtonStatus(bookId, newStatus);
+  }
 }
+

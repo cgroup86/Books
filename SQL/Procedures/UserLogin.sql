@@ -8,6 +8,7 @@ CREATE PROCEDURE SP_UserLogin
     @Password NVARCHAR(200)
 AS
 BEGIN
+	SET @email = LOWER(@email);
     --SET NOCOUNT ON;
 
     -- Check if the user exists and match the email and password

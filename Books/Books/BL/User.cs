@@ -35,8 +35,15 @@ namespace Books.BL
 
         public List<User> Read()
         {
-            DBservices dBservices = new DBservices();
-            return dBservices.ReadUsers();
+            try
+            {
+                DBservices dBservices = new DBservices();
+                return dBservices.ReadUsers();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public bool Register()
@@ -56,15 +63,33 @@ namespace Books.BL
 
         public bool Login()
         {
-            DBservices dBservices = new DBservices();
-            bool success = dBservices.UserLogin(this);
-            if (!success)
+            try
             {
-                throw new ArgumentException("Invalid email or password");
+                DBservices dBservices = new DBservices();
+                bool success = dBservices.UserLogin(this);
+                if (!success)
+                {
+                    throw new ArgumentException("Invalid email or password");
+                }
+                return true;
             }
-            return true;
+            catch (Exception ex) 
+            { 
+                throw ex;
+            }
         }
 
-
+        public int UpdateUserValues(int userId, bool isActive)
+        {
+            try
+            {
+                DBservices dbservices = new DBservices();
+                return dbservices.UPdateUserValue(userId, isActive);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

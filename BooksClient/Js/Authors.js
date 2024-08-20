@@ -1,5 +1,4 @@
-﻿
-//let authorsData = []; // Initialize the authorsData array
+﻿//let authorsData = []; // Initialize the authorsData array
 
 //async function fetchAuthors(query) {
 //    const url = `https://openlibrary.org/search/authors.json?q=${encodeURIComponent(query)}`;
@@ -144,180 +143,7 @@
 //    });
 //})();
 
-
-
-
-//const apiStart = 'https://localhost:7291/api';
-//let currentPage = 1; // Start from the first page
-//const pageSize = 10; // Number of authors per page
-//$(document).ready(function () {
-//    getFromServer(currentPage, pageSize);
-
-//    $('#prevPageBtn').click(function () {
-//        if (currentPage > 1) {
-//            currentPage--;
-//            getFromServer(currentPage, pageSize);
-//        }
-//    });
-
-//    $('#nextPageBtn').click(function () {
-//        currentPage++;
-//        getFromServer(currentPage, pageSize);
-
-//    });
-
-//    // Close the modal when the user clicks on the close button
-//    $(".close-button").click(function () {
-//        $("#authorModal").hide();
-//    });
-
-//    // Close the modal if the user clicks outside of the modal content
-//    $(window).click(function (event) {
-//        if ($(event.target).is("#authorModal")) {
-//            $("#authorModal").hide();
-//        }
-//    });
-//});
-
-//function getFromServer(page, pageSize) {
-//    console.log("Fetching authors from server");
-//    let api = `${apiStart}/Authors/get10AuthorsPerPage/${page}/${pageSize}`;
-//    ajaxCall("GET", api, "", getAuthorsSCB, getAuthorsECB);
-//}
-//const array=[];
-//function getAuthorsSCB(authors) {
-//    console.log("Authors received:", authors);
-//    if (Array.isArray(authors)) {
-//        renderAuthors(authors);
-//    } else {
-//        console.error("Expected an array but got:", authors);
-//    }
-
-//    $('#prevPageBtn').prop('disabled', currentPage === 1);
-//    if (authors.length < pageSize) {
-//        $('#nextPageBtn').hide();
-//        alert("There is No More Authors!!");
-//    } else {
-//        $('#nextPageBtn').show();
-//    }
-
-//    authors.forEach(author => {
-//        array.push(author);
-//    });
-//}
-
-//function getAuthorsECB(err) {
-//    console.log(err);
-//}
-
-//function renderAuthors(authors) {
-//    var instructorsList = $("#Authors-list");
-//    instructorsList.empty();
-//    authors.forEach(function (author) {
-//        var authorBox = `
-//        <div class="profile-card-container  col-12 col-md-4 col-lg-2 ">
-//            <div class="profile-card">
-//                <div class="card-image">
-//                    <img src="${author.image || 'default-image-url'}" alt="${author.name || 'No Name'}">
-//                </div>
-//                <div class="card-details">
-//                    <button class="showMoreInfoAboutThisAuthor" data-author-name="${author.name}">Show</button>
-//                    <div class="details-container">
-//                        <p id="profile-display-name" class="italic-text">${author.name || 'No Name'}</p>
-//                    </div>
-//                </div>
-//            </div>
-//        </div>
-//    `;
-//        instructorsList.append(authorBox);
-//    });
-
-//    $(".showMoreInfoAboutThisAuthor").click(function () {
-//        var authorName = $(this).data("author-name");
-//        fetchAuthorDetails(array, authorName);
-//    });
-//}
-
-//function renderAuthors(authors) {
-//    var instructorsList = $("#Authors-list");
-//    instructorsList.empty();
-//    authors.forEach(function (author) {
-//        var authorBox = `
-//        <li class="item" draggable="true">
-//            <div class="details">
-//                <img src="${author.image || 'default-image-url'}" alt="${author.name || 'No Name'}">
-//                <span>${author.name || 'No Name'}</span>
-//            </div>
-//            <i class="uil uil-draggabledots"></i>
-//        </li>
-//        `;
-//        instructorsList.append(authorBox);
-//    });
-
-//    // Add event listener for showing the modal
-//    $(".showMoreInfoAboutThisAuthor").click(function () {
-//        var authorName = $(this).data("author-name");
-//        fetchAuthorDetails(array, authorName);
-//    });
-//}
-
-
-
-
-
-
-//function renderAuthors(authors) {
-//    var instructorsList = $("#Authors-list");
-//    instructorsList.empty();
-//    authors.forEach(function (author) {
-//        var authorBox = `
-//        <li class="item" draggable="true" data-author-name="${author.name}">
-//            <div class="details">
-//                <img src="${author.image || 'default-image-url'}" alt="${author.name || 'No Name'}">
-//                <span>${author.name || 'No Name'}</span>
-//            </div>
-//            <i class="uil uil-draggabledots"></i>
-//        </li>
-//        `;
-//        instructorsList.append(authorBox);
-//    });
-
-//     Add event listener for showing the modal when clicking on the item
-//    $(".item").click(function () {
-//        var authorName = $(this).data("author-name");
-//        fetchAuthorDetails(array, authorName);
-//    });
-//}
-
-
-//function fetchAuthorDetails(List,name) {
-//    List.forEach(author => {
-//        if (author.name == name) {
-//            console.log(author);
-//            showModal(author);
-//        }
-//    });
-//}
-
-//function showModal(author) {
-//    $("#modal-author-name").text(author.name || 'No Name');
-//    $("#modal-author-image").attr("src", author.image || 'default-image-url');
-//    $("#modal-author-bio").text(author.description || 'No Bio Available');
-//    $("#modal-author-topWork").text(`Top Work: ${author.topWork}` || 'No Top Work');
-//    $("#modal-author-workCount").text(`Work Count: ${author.workCount}` || 'No Work count');
-//    $("#authorModal").show();
-//}
-// Close the modal when the user clicks on the close button
-//$(".close-button").click(function () {
-//    $("#authorModal").hide();
-//});
-
-// Close the modal if the user clicks outside of the modal content
-//$(window).click(function (event) {
-//    if ($(event.target).is("#authorModal")) {
-//        $("#authorModal").hide();
-//    }
-//});
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
 const apiStart = 'https://localhost:7291/api';
@@ -331,12 +157,14 @@ $(document).ready(function () {
     $('#prevPageBtn').click(function () {
         if (currentPage > 1) {
             currentPage--;
+            $('#numOfPages').text("Page " + currentPage);
             getFromServer(currentPage, pageSize);
         }
     });
 
     $('#nextPageBtn').click(function () {
         currentPage++;
+        $('#numOfPages').text("Page " + currentPage);
         getFromServer(currentPage, pageSize);
     });
 
@@ -392,17 +220,28 @@ function renderAuthors(authors) {
         <li class="item" draggable="true" data-author-name="${author.name}">
             <div class="details">
                 <img src="${author.image || 'default-image-url'}" alt="${author.name || 'No Name'}">
-                <span>${author.name || 'No Name'}</span>
+                <p><strong>${author.name || 'No Name'}</strong></p>
             </div>
             <i class="uil uil-draggabledots"></i>
+            <button class="show-Author-Books-button">Show books</button>
         </li>
         `;
         instructorsList.append(authorBox);
     });
 
+    // Handle item click for fetching author details
     $(".item").click(function () {
         const authorName = $(this).data("author-name");
         fetchAuthorDetails(array, authorName);
+    });
+
+    // Handle "Show books" button click for each author
+    $(".show-Author-Books-button").click(function (event) {
+        event.stopPropagation();
+        const authorName = $(this).closest(".item").data("author-name");
+        console.log(authorName);
+        localStorage.setItem("authorName", authorName);
+        window.location.href = "http://localhost:60430/Html/AuthorsBooks.html";
     });
 }
 
@@ -411,6 +250,10 @@ function fetchAuthorDetails(List, name) {
     if (author) {
         showModal(author);
     }
+}
+
+function getAuthorName(authorName) {
+
 }
 
 function showModal(author) {

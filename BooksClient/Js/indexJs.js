@@ -1,11 +1,198 @@
 $(document).ready(function() {
-  // Load header.html into the header-container div
   $('#header-container').load('header.html', function() {
-      // Add event listeners after loading the HTML
       LoginRegisterModalFunc();
+      checkUserStatus();
+  });
+});
+
+
+
+
+// ---------------------------------------------------------------------------------------------------------------
+let digitalPage = 1;
+let physicalPage = 1;
+const pageSize = 5;
+let digitalTotalRecords = 0;
+let physicalTotalRecords = 0;
+const fetchTotalCountInterval = 10; 
+let fetchTotalCountDigital = true;
+let fetchTotalCountPhysical = true;
+let digitalPageClicks = 0;
+let physicalPageClicks = 0;
+
+$(document).ready(function() {
+    loadDigitalBooks(digitalPage, pageSize, true);
+    loadPhysicalBooks(physicalPage, pageSize, true);
+});
+
+function loadDigitalBooks(pageNumber, pageSize, fetchTotalCount) {
+    fetchBooksFromDB(true, pageNumber, pageSize, fetchTotalCount);
+}
+
+function loadPhysicalBooks(pageNumber, pageSize, fetchTotalCount) {
+    fetchBooksFromDB(false, pageNumber, pageSize, fetchTotalCount);
+}
+
+// -------------------------------------------------------------------------------------------------------------
+
+
+function renderBooks(books, container) {
+    container.empty();
+
+    books.forEach(book => {
+        let bookCard = `
+        <div class="book-card">
+            <img src="${book.smallThumbnailUrl}" alt="cover">
+            <h3>
+                <a href="${book.previewLink}" target="_blank">${book.title}</a>
+            </h3>
+            <p class="price-number">
+                <b>Price: <span>${book.price}₪</span></b>
+            </p>
+            <button class="add-book-button" data-book-id="${book.id}" data-is-ebook="${book.isEbook}" data-book-available="${book.isEbook || book.isAvailable}">Add book</button>
+        </div>`;
+        
+        container.append(bookCard);
+    });
+}
+
+// -------------------------------------------------------------------------------------------------------------
+
+function fetchBooksFromDB(isEbook, pageNumber, pageSize, fetchTotalCount) {
+    const api = `${apiStart}Books?isEbook=${isEbook}&pageNumber=${pageNumber}&pageSize=${pageSize}&fetchTotalCount=${fetchTotalCount}`;
+    ajaxCall("GET", api, "", fetchBooksSuccess, fetchBooksError);
+}
+
+function fetchBooksSuccess(response) {
+  //console.log(response);
+  const container = response.isEbook ? $('.main-container').first() : $('.main-container').last();
+  const paginationElement = response.isEbook ? $('#digital-pagination') : $('#physical-pagination');
+  
+  if (response.isEbook) {
+      if (digitalPageClicks % fetchTotalCountInterval === 0) {
+          digitalTotalRecords = response.totalRecords !== undefined ? response.totalRecords : digitalTotalRecords;
+          fetchTotalCountDigital = false;
+      }
+      digitalPageClicks++; 
+  } else {
+      if (physicalPageClicks % fetchTotalCountInterval === 0) {
+          physicalTotalRecords = response.totalRecords !== undefined ? response.totalRecords : physicalTotalRecords;
+          fetchTotalCountPhysical = false;
+      }
+      physicalPageClicks++; 
+  }
+
+    renderBooks(response.books, container);
+    updatePaginationControls(response.isEbook ? digitalTotalRecords : physicalTotalRecords, response.pageSize, response.pageNumber, paginationElement);
+}
+
+function fetchBooksError(err) {
+    console.error("Error fetching books:", err);
+}
+
+function updatePaginationControls(totalRecords, pageSize, currentPage, paginationElement) {
+  const totalPages = Math.ceil(totalRecords / pageSize);
+
+  let paginationHtml = `
+      <button class="prevPage" ${currentPage <= 1 ? 'disabled' : ''}>Previous</button>
+      <span>Page ${currentPage} of ${totalPages}</span>
+      <button class="nextPage" ${currentPage >= totalPages ? 'disabled' : ''}>Next</button>
+  `;
+  paginationElement.html(paginationHtml);
+
+  paginationElement.find('.prevPage').off('click').on('click', function () {
+    if (currentPage > 1) {
+        currentPage--;
+        loadBooksBasedOnContainer(paginationElement, currentPage, pageSize);
+    }
   });
 
-  // // Physical Books: saleInfo.saleability != FREE && saleInfo.isEbook == false
+  paginationElement.find('.nextPage').off('click').on('click', function () {
+    if (currentPage < totalPages) {
+        currentPage++;
+        loadBooksBasedOnContainer(paginationElement, currentPage, pageSize);
+    }
+  });
+
+}
+
+function loadBooksBasedOnContainer(paginationElement, page, pageSize) {
+  let fetchTotalCount;
+  
+  if (paginationElement.is('#digital-pagination')) {
+    fetchTotalCount = (page === 1 || digitalPageClicks % fetchTotalCountInterval === 0);
+    if (page % fetchTotalCountInterval === 0) {
+        fetchTotalCountDigital = true; 
+    }
+    digitalPage = page;
+    loadDigitalBooks(page, pageSize, fetchTotalCount);
+  } else if (paginationElement.is('#physical-pagination')) {
+      fetchTotalCount = (page === 1 || physicalPageClicks % fetchTotalCountInterval === 0);
+      if (page % fetchTotalCountInterval === 0) {
+          fetchTotalCountPhysical = true; 
+      }
+      physicalPage = page;
+      loadPhysicalBooks(page, pageSize, fetchTotalCount);
+  }
+
+}
+
+// -------------------------------------------------------------------------------------------------------------
+
+$('.main-container').on('click', '.add-book-button', function() {
+  const user = JSON.parse(sessionStorage.getItem('userData'));
+    if (!user) {
+        alert("You need to log in to add a book");
+    }
+    else {
+      const button = $(this);
+      const bookId = button.data('book-id');
+      const isEbook = button.data('is-ebook');
+      const isAvailable = button.data('book-available');
+
+      if (!isEbook && !isAvailable) {
+          alert('This book is out of stock.');
+          return;
+      }
+      addToLibrary(bookId, isEbook);
+    }
+  });
+  
+function addToLibrary(bookId, isEbook) {
+  //console.log("addToLibrary  bookId:", bookId, "isEbook:", isEbook);
+    const user = JSON.parse(sessionStorage.getItem('userData'));
+    const personalLibrary = {
+        UserId: user.userId,
+        BookId: bookId,
+        Status: false, 
+        IsPurchased: false
+    };
+
+    const api = `${apiStart}PersonalLibraries/AddToLibrary/${isEbook}`;
+    ajaxCall("POST", api, JSON.stringify(personalLibrary), addBookSuccess, addBookError);
+}
+
+function addBookSuccess(response) {
+    if (response.success) {
+        alert('Book added to your library successfully.');
+        if (response.isEbook) {
+            loadDigitalBooks(digitalPage, pageSize, fetchTotalCountDigital);
+        } else {
+            loadPhysicalBooks(physicalPage, pageSize, fetchTotalCountPhysical);
+        }
+    } else {
+      alert("Book already exists on your library");
+    }
+}
+
+function addBookError(err) {
+    alert("Book already exists on your library");
+}
+
+
+
+
+// // Physical Books: saleInfo.saleability != FREE && saleInfo.isEbook == false
   // // Digital Books: saleInfo.isEbook == true
   // var books = [];
   // $.getJSON("../DataJson/books.json", function(data) {
@@ -105,7 +292,11 @@ $(document).ready(function() {
   //         fetchAllAuthors(authors);
   //     });
   // });
-});
+
+
+
+
+
 
 // //------------------------------------------------------------------------
 
@@ -271,189 +462,3 @@ $(document).ready(function() {
 //   max = Math.floor(max);
 //   return Math.floor(Math.random() * (max - min + 1)) + min;
 // }
-
-
-// ---------------------------------------------------------------------------------------------------------------
-let digitalPage = 1;
-let physicalPage = 1;
-const pageSize = 5;
-let digitalTotalRecords = 0;
-let physicalTotalRecords = 0;
-const fetchTotalCountInterval = 10; // Fetch total count once every 10 pages
-let fetchTotalCountDigital = true;
-let fetchTotalCountPhysical = true;
-let digitalPageClicks = 0;
-let physicalPageClicks = 0;
-
-$(document).ready(function() {
-    loadDigitalBooks(digitalPage, pageSize, true);
-    loadPhysicalBooks(physicalPage, pageSize, true);
-});
-
-function loadDigitalBooks(pageNumber, pageSize, fetchTotalCount) {
-    fetchBooksFromDB(true, pageNumber, pageSize, fetchTotalCount);
-}
-
-function loadPhysicalBooks(pageNumber, pageSize, fetchTotalCount) {
-    fetchBooksFromDB(false, pageNumber, pageSize, fetchTotalCount);
-}
-
-// -------------------------------------------------------------------------------------------------------------
-
-
-function renderBooks(books, container) {
-    container.empty(); // Clear the container
-
-    books.forEach(book => {
-        let bookCard = `
-        <div class="book-card">
-            <img src="${book.smallThumbnailUrl}" alt="cover">
-            <h3>
-                <a href="${book.infoLink}" target="_blank">${book.title}</a>
-            </h3>
-            <p class="price-number">
-                <b>Price: <span>${book.price}₪</span></b>
-            </p>
-            <button class="add-book-button" data-book-id="${book.id}" data-is-ebook="${book.isEbook}" data-book-available="${book.isEbook || book.isAvailable}">Add book</button>
-        </div>`;
-        
-        container.append(bookCard);
-    });
-}
-
-// -------------------------------------------------------------------------------------------------------------
-
-function fetchBooksFromDB(isEbook, pageNumber, pageSize, fetchTotalCount) {
-    const api = `${apiStart}Books?isEbook=${isEbook}&pageNumber=${pageNumber}&pageSize=${pageSize}&fetchTotalCount=${fetchTotalCount}`;
-    ajaxCall("GET", api, "", fetchBooksSuccess, fetchBooksError);
-}
-
-function fetchBooksSuccess(response) {
-  //console.log(response);
-  const container = response.isEbook ? $('.main-container').first() : $('.main-container').last();
-  const paginationElement = response.isEbook ? $('#digital-pagination') : $('#physical-pagination');
-  
-  if (response.isEbook) {
-      if (digitalPageClicks % fetchTotalCountInterval === 0) {
-          digitalTotalRecords = response.totalRecords !== undefined ? response.totalRecords : digitalTotalRecords;
-          fetchTotalCountDigital = false;
-      }
-      digitalPageClicks++; // Increment page clicks counter
-  } else {
-      if (physicalPageClicks % fetchTotalCountInterval === 0) {
-          physicalTotalRecords = response.totalRecords !== undefined ? response.totalRecords : physicalTotalRecords;
-          fetchTotalCountPhysical = false;
-      }
-      physicalPageClicks++; // Increment page clicks counter
-  }
-
-    renderBooks(response.books, container);
-    updatePaginationControls(response.isEbook ? digitalTotalRecords : physicalTotalRecords, response.pageSize, response.pageNumber, paginationElement);
-}
-
-function fetchBooksError(err) {
-    console.error("Error fetching books:", err);
-}
-
-function updatePaginationControls(totalRecords, pageSize, currentPage, paginationElement) {
-  const totalPages = Math.ceil(totalRecords / pageSize);
-
-  let paginationHtml = `
-      <button class="prevPage" ${currentPage <= 1 ? 'disabled' : ''}>Previous</button>
-      <span>Page ${currentPage} of ${totalPages}</span>
-      <button class="nextPage" ${currentPage >= totalPages ? 'disabled' : ''}>Next</button>
-  `;
-  paginationElement.html(paginationHtml);
-
-  // Event handlers for pagination buttons
-  paginationElement.find('.prevPage').off('click').on('click', function () {
-    if (currentPage > 1) {
-        currentPage--;
-        loadBooksBasedOnContainer(paginationElement, currentPage, pageSize);
-    }
-  });
-
-  paginationElement.find('.nextPage').off('click').on('click', function () {
-    if (currentPage < totalPages) {
-        currentPage++;
-        loadBooksBasedOnContainer(paginationElement, currentPage, pageSize);
-    }
-  });
-
-}
-
-function loadBooksBasedOnContainer(paginationElement, page, pageSize) {
-  let fetchTotalCount;
-  
-  if (paginationElement.is('#digital-pagination')) {
-    fetchTotalCount = (page === 1 || digitalPageClicks % fetchTotalCountInterval === 0);
-    if (page % fetchTotalCountInterval === 0) {
-        fetchTotalCountDigital = true; // Reset flag to fetch total count
-    }
-    digitalPage = page;
-    loadDigitalBooks(page, pageSize, fetchTotalCount);
-  } else if (paginationElement.is('#physical-pagination')) {
-      fetchTotalCount = (page === 1 || physicalPageClicks % fetchTotalCountInterval === 0);
-      if (page % fetchTotalCountInterval === 0) {
-          fetchTotalCountPhysical = true; // Reset flag to fetch total count
-      }
-      physicalPage = page;
-      loadPhysicalBooks(page, pageSize, fetchTotalCount);
-  }
-
-}
-
-// -------------------------------------------------------------------------------------------------------------
-
-$('.main-container').on('click', '.add-book-button', function() {
-  const user = JSON.parse(sessionStorage.getItem('userData'));
-    if (!user) {
-        alert("You need to log in to add a book");
-    }
-    else {
-      const button = $(this);
-      const bookId = button.data('book-id');
-      const isEbook = button.data('is-ebook');
-      const isAvailable = button.data('book-available');
-
-      if (!isEbook && !isAvailable) {
-          alert('This book is out of stock.');
-          return;
-      }
-      addToLibrary(bookId, isEbook);
-    }
-  });
-  
-// Function to add a book to the library
-function addToLibrary(bookId, isEbook) {
-  //console.log("addToLibrary called with bookId:", bookId, "isEbook:", isEbook);
-    const user = JSON.parse(sessionStorage.getItem('userData'));
-    const personalLibrary = {
-        UserId: user.userId,
-        BookId: bookId,
-        Status: false, // Set to "ToRead" initially
-        IsPurchased: false // Not Purchased from user --> false
-    };
-
-    const api = `${apiStart}PersonalLibraries/AddToLibrary/${isEbook}`;
-    ajaxCall("POST", api, JSON.stringify(personalLibrary), addBookSuccess, addBookError);
-}
-
-function addBookSuccess(response) {
-    if (response.success) {
-        alert('Book added to your library successfully.');
-        // Reload the books to update the stock status
-        if (response.isEbook) {
-            loadDigitalBooks(digitalPage, pageSize, fetchTotalCountDigital);
-        } else {
-            loadPhysicalBooks(physicalPage, pageSize, fetchTotalCountPhysical);
-        }
-    } else {
-      alert("Book already exists on your library");
-    }
-}
-
-function addBookError(err) {
-    //console.error("Error adding book to library:", err);
-    alert("Book already exists on your library");
-}

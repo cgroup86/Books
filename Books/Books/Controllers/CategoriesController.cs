@@ -15,7 +15,14 @@ namespace Books.Controllers
         [HttpPost]
         public int Post([FromBody] Category category)
         {
-            return category.insertCategory();
+            try
+            {
+                return category.insertCategory();
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
         }
         //// GET: api/<CategoriesController>
         //[HttpGet]

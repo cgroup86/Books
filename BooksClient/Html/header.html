@@ -1,72 +1,70 @@
-﻿<!-- header.html -->
-<div class="container">
-  <div class="row align-items-center">
-      <div class="col-6">
-          <h1 class="nav-title">My Library</h1>
-      </div>
-
-      <div class="col-6 text-end">
-          <nav>
-            <button id="loginBtn" class="btn btn-primary me-2">Login</button>
-            <button id="registerBtn" class="btn btn-secondary">Register</button>
-          </nav>
-      </div>
-  </div>
-</div>
-
-<!-- Login Modal -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span class="closeBtn">&times;</span>
-            <h2>Login</h2>
+﻿<div class="container">
+    <div class="row align-items-center">
+        <div class="col-6">
+            <h1 class="nav-title">My Library</h1>
         </div>
-        <div class="modal-body">
-            <form id="loginForm">
-                <div class="input-field">
-                    <input type="text" id="loginEmail" name="email" required>
-                    <label for="loginEmail">Enter your email</label>
-                </div>
-                <div class="input-field">
-                    <input type="password" id="loginPassword" name="password" required>
-                    <label for="loginPassword">Enter your password</label>
-                </div>
-                <button type="submit">Log In</button>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <p>Don't have an account? <a href="#" id="openRegisterModalFooter">Register</a></p>
+  
+        <div class="col-6 text-end">
+            <nav>
+              <button id="loginBtn" class="btn btn-primary me-2">Login</button>
+              <button id="registerBtn" class="btn btn-secondary">Register</button>
+              <button id="logoutBtn" class="btn btn-danger" style="display: none;">Logout</button>
+            </nav>
         </div>
     </div>
   </div>
   
-  <!-- Register Modal -->
+  <div id="loginModal" class="modal">
+      <div class="modal-content">
+          <div class="modal-header">
+              <span id="closeLoginBtn" class="closeBtn">&times;</span>
+              <h2>Login</h2>
+          </div>
+          <div class="modal-body">
+              <form id="loginForm">
+                  <div class="input-field">
+                      <input type="text" id="loginEmail" name="email" required>
+                      <label for="loginEmail">Enter your email</label>
+                  </div>
+                  <div class="input-field">
+                      <input type="password" id="loginPassword" name="password" required>
+                      <label for="loginPassword">Enter your password</label>
+                  </div>
+                  <button type="submit">Log In</button>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <p>Don't have an account? <a href="#" id="openRegisterModalFooter">Register</a></p>
+          </div>
+      </div>
+  </div>
+    
   <div id="registerModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span class="closeBtn">&times;</span>
-            <h2>Register</h2>
-        </div>
-        <div class="modal-body">
-            <form id="registerForm">
-                <div class="input-field">
-                    <input type="text" id="registerName" name="name" required>
-                    <label for="registerName">Enter your name</label>
-                </div>
-                <div class="input-field">
-                    <input type="email" id="registerEmail" name="email" required>
-                    <label for="registerEmail">Enter your email</label>
-                </div>
-                <div class="input-field">
-                    <input type="password" id="registerPassword" name="password" minlength="3" required>
-                    <label for="registerPassword">Enter your password</label>
-                </div>
-                <button type="submit">Register</button>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <p>Already have an account? <a href="#" id="openLoginModalFooter">Login</a></p>
-        </div>
-    </div>
+      <div class="modal-content">
+          <div class="modal-header">
+              <span id="closeRegisterBtn" class="closeBtn">&times;</span>
+              <h2>Register</h2>
+          </div>
+          <div class="modal-body">
+              <form id="registerForm">
+                  <div class="input-field">
+                      <input type="text" id="registerName" name="name" required>
+                      <label for="registerName">Enter your name</label>
+                  </div>
+                  <div class="input-field">
+                      <input type="email" id="registerEmail" name="email" required>
+                      <label for="registerEmail">Enter your email</label>
+                  </div>
+                  <div class="input-field">
+                      <input type="password" id="registerPassword" name="password" minlength="3" required>
+                      <label for="registerPassword">Enter your password</label>
+                  </div>
+                  <button type="submit">Register</button>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <p>Already have an account? <a href="#" id="openLoginModalFooter">Login</a></p>
+          </div>
+      </div>
   </div>
   

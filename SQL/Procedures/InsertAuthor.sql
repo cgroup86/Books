@@ -8,8 +8,7 @@ CREATE PROCEDURE SP_InsertAuthor
 	-- @id int,
 	@name nvarchar(200),
 	@topWork nvarchar(200),
-	@workCount int,
-	@key nvarchar(100)
+	@workCount int
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -17,6 +16,6 @@ BEGIN
 	-- SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	INSERT INTO [Authors] ([AuthorName], [topWork], [workCount], [AuthorKey]) VALUES(@name, @topWork, @workCount, @key);
+	INSERT INTO [Authors] ([AuthorName], [topWork], [workCount]) VALUES(@name, @topWork, @workCount);
 END
 GO

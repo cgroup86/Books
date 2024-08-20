@@ -8,7 +8,7 @@ BEGIN
 			b.googleBooksId, pl.[Status], pl.IsPurchased, b.isActive
 		FROM Books b
 		INNER JOIN PersonalLibrary pl ON b.BookId = pl.BookId
-		WHERE pl.UserId = @UserId AND pl.IsPurchased = 1
+		WHERE pl.UserId = @UserId AND pl.IsPurchased = 1 and b.isActive = 1
 
     END
 END

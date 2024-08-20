@@ -13,8 +13,15 @@ namespace Books.Controllers
         [HttpGet]
         public IEnumerable<User> Get()
         {
-            User user = new User();
-            return user.Read();
+            try
+            {
+                User user = new User();
+                return user.Read();
+            }
+            catch (Exception ex)
+            {
+                return new List<User>();
+            }
         }
 
         [HttpPost("Register")]
@@ -29,6 +36,10 @@ namespace Books.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
         }
 
 
@@ -39,6 +50,25 @@ namespace Books.Controllers
             {
                 user.Login();
                 return Ok(new { id = user.Id, message = "Logged in successfully", name = user.Name, isActive = user.IsActive, isAdmin = user.IsAdmin });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
+        }
+
+        [HttpPut("UpdateUserValuesById/user Id/{userId}/Is Active/{isActive}")]
+        public IActionResult UpdateCourseIsActiveAndTitle(int userId, bool isActive)
+        {
+            try
+            {
+                User user = new User();
+                user.UpdateUserValues(userId, isActive);
+                return Ok(new { message = "Course with id: " + userId + " isActive status and name has been updated successfully" });
             }
             catch (ArgumentException ex)
             {

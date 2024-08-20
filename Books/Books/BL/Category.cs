@@ -21,8 +21,15 @@
 
         public int insertCategory()
         {
-            DBservices dBservices = new DBservices();
-            return dBservices.insertCategory(this);
+            try
+            {
+                DBservices dBservices = new DBservices();
+                return dBservices.insertCategory(this);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

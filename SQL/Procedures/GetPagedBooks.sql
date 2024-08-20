@@ -31,10 +31,10 @@ BEGIN
     -- Perform the pagination query
     SELECT *
     FROM (
-        SELECT B.*, 
+        SELECT B.BookId, B.BookTitle, B.price, B.smallThumbnailUrl, B.previewLink, B.isEbook, B.webReaderLink, B.isAvailable,
             ROW_NUMBER() OVER (ORDER BY B.BookId) AS RowNumber
         FROM Books B
-        WHERE B.IsEbook = @IsEbook
+        WHERE B.IsEbook = @IsEbook and B.isActive = 1
     ) AS Result
     WHERE RowNumber BETWEEN ((@PageNumber - 1) * @PageSize) + 1 AND @PageNumber * @PageSize;
 
