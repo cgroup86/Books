@@ -205,7 +205,7 @@ function getAuthorsSCB(authors) {
     }
 
     // Update the global authors array
-    array.length = 0; // Clear the array before pushing new data
+    array.length = 0; 
     array.push(...authors);
 }
 
@@ -230,25 +230,17 @@ function renderAuthors(authors) {
         instructorsList.append(authorBox);
     });
 
-    // Handle item click for fetching author details
+
     $(".item").click(function () {
         const authorName = $(this).data("author-name");
         fetchAuthorDetails(array, authorName);
     });
 
-    // Handle "Show books" button click for each author
-    //$(".show-Author-Books-button").click(function (event) {
-    //    event.stopPropagation();
-    //    const authorName = $(this).closest(".item").data("author-name");
-    //    console.log(authorName);
-    //    localStorage.setItem("authorName", authorName);
-    //    window.location.href = "http://localhost:60430/Html/AuthorsBooks.html";
-    //});
     $(".show-Author-Books-button").click(function (event) {
         event.stopPropagation();
         const authorName = $(this).closest(".item").data("author-name");
         console.log(authorName);
-        window.location.href = `http://localhost:60430/Html/AuthorsBooks.html?authorName=${encodeURIComponent(authorName)}`;
+        window.location.href = `AuthorsBooks.html?authorName=${encodeURIComponent(authorName)}`;
     });
 
 }
@@ -260,9 +252,6 @@ function fetchAuthorDetails(List, name) {
     }
 }
 
-function getAuthorName(authorName) {
-
-}
 
 function showModal(author) {
     $("#modal-author-name").text(author.name || 'No Name');
@@ -272,4 +261,3 @@ function showModal(author) {
     $("#modal-author-workCount").text(`Work Count: ${author.workCount || 'No Work Count'}`);
     $("#authorModal").modal('show');
 }
-

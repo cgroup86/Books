@@ -94,6 +94,62 @@ namespace Books.Controllers
             }
         }
 
+        [HttpPut("AddRemoveRequestToBuy/sellerId/{sellerId}/buyerId/{buyerId}/bookId/{bookId}")]
+        public IActionResult AddRemoveRequestToBuy(int sellerId, int buyerId, int bookId)
+        {
+            try
+            {
+                PersonalLibrary.AddRemoveRequestToBuy(sellerId, buyerId, bookId);
+                return Ok(1);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
+        }
+
+
+        [HttpPut("AcceptRequestToBuy/sellerId/{sellerId}/buyerId/{buyerId}/bookId/{bookId}")]
+        public IActionResult AcceptRequestToBuy(int sellerId, int buyerId, int bookId)
+        {
+            try
+            {
+                PersonalLibrary.AcceptRequestToBuy(sellerId, buyerId, bookId);
+                return Ok(1);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
+        }
+
+        [HttpPut("GetPurchasedBooksWithStatus1/userId/{userId}")]
+        public IActionResult GetPurchasedBooksWithStatus1(int userId)
+        {
+            try
+            {
+                var obj = PersonalLibrary.GetPurchasedBooksWithStatus1(userId);
+                return Ok(obj);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
+        }
+
+        [HttpPut("GetRequestedBooksByBuyer/userId/{userId}")]
+        public IActionResult GetRequestedBooksByBuyer(int userId)
+        {
+            try
+            {
+                var obj = PersonalLibrary.GetRequestedBooksByBuyer(userId);
+                return Ok(obj);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
+        }
         //// GET: api/<PersonalLibrariesController>
         //[HttpGet]
         //public IEnumerable<string> Get()

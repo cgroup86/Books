@@ -2421,4 +2421,271 @@ public class DBservices
 
         return cmd;
     }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method adds or removes a request to buy a book
+    //--------------------------------------------------------------------------------------------------
+    public int AddRemoveRequestToBuy(int sellerId, int buyerId, int bookId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureAddRemove("SP_AddRemoveRequestToBuyProcedure", con, sellerId, buyerId, bookId); // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for AddRemoveRequestToBuy
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureAddRemove(String spName, SqlConnection con, int sellerId, int buyerId, int bookId)
+    {
+        SqlCommand cmd = new SqlCommand(); 
+
+        cmd.Connection = con;   
+
+        cmd.CommandText = spName;     
+
+        cmd.CommandTimeout = 10;           
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@sellerId", sellerId);
+        cmd.Parameters.AddWithValue("@buyerId", buyerId);
+        cmd.Parameters.AddWithValue("@bookId", bookId);
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method accepts a request to buy a book
+    //--------------------------------------------------------------------------------------------------
+    public int AcceptRequestToBuy(int sellerId, int buyerId, int bookId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureAccept("SP_AcceptRequestToBuyProcedure", con, sellerId, buyerId, bookId); // create the command
+
+        try
+        {
+            int numEffected = cmd.ExecuteNonQuery(); // execute the command
+            return numEffected;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for AcceptRequestToBuy
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureAccept(String spName, SqlConnection con, int sellerId, int buyerId, int bookId)
+    {
+        SqlCommand cmd = new SqlCommand(); 
+
+        cmd.Connection = con;            
+
+        cmd.CommandText = spName;   
+
+        cmd.CommandTimeout = 10;          
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@sellerId", sellerId);
+        cmd.Parameters.AddWithValue("@buyerId", buyerId);
+        cmd.Parameters.AddWithValue("@bookId", bookId);
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets all purchased books with status 1
+    //--------------------------------------------------------------------------------------------------
+    public List<object> GetPurchasedBooksWithStatus1(int userId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureGetPurchased("SP_GetPurchasedBooksWithStatus1", con, userId); // create the command
+
+        try
+        {
+            List<object> objList = new List<object>();
+            SqlDataReader reader = cmd.ExecuteReader(); // execute the command
+
+            while (reader.Read())
+            {
+                objList.Add(new
+                {
+                    Id = Convert.ToInt32(reader["BookId"]),
+                    Title = reader["BookTitle"].ToString(),
+                    UserId = Convert.ToInt32(reader["UserId"]),
+                    UserName = reader["name"].ToString()
+                });
+            }
+
+            return objList;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+        
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for GetPurchasedBooksWithStatus1
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetPurchased(String spName, SqlConnection con, int userId)
+    {
+        SqlCommand cmd = new SqlCommand(); 
+
+        cmd.Connection = con;      
+
+        cmd.CommandText = spName;    
+
+        cmd.CommandTimeout = 10;         
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; 
+
+        cmd.Parameters.AddWithValue("@userID", userId);
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets all requested books by buyer for a specific seller
+    //--------------------------------------------------------------------------------------------------
+    public List<object> GetRequestedBooksByBuyer(int sellerId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureGetRequested("SP_GetRequestedBooksByBuyer", con, sellerId); // create the command
+
+        try
+        {
+            SqlDataReader reader = cmd.ExecuteReader(); // execute the command
+            List<object> objList = new List<object>();
+
+            while (reader.Read())
+            {
+                objList.Add(new
+                {
+                    Id = Convert.ToInt32(reader["BookId"]),
+                    Title = reader["BookTitle"].ToString(),
+                    BuyerId = Convert.ToInt32(reader["buyerId"])
+                });
+            }
+
+            return objList;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for GetRequestedBooksByBuyer
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetRequested(String spName, SqlConnection con, int sellerId)
+    {
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        cmd.Parameters.AddWithValue("@sellerId", sellerId);
+        return cmd;
+    }
 }

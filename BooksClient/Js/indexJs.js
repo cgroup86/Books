@@ -189,7 +189,67 @@ function addBookError(err) {
     alert("Book already exists on your library");
 }
 
+function handleCheckboxChange(checkboxId, textboxId, buttonId) {
+    const checkbox = document.getElementById(checkboxId);
+    const textbox = document.getElementById(textboxId);
+    const button = document.getElementById(buttonId);
 
+    textbox.disabled = !checkbox.checked;
+    button.disabled = !textbox.value.trim();
+
+    button.addEventListener('click', function () {
+        if (!button.disabled) {
+            searchBooks(checkboxId.replace('checkbox', ''), textbox.value.trim());
+        }
+    });
+}
+
+function updateButtonStatus(textboxId, buttonId) {
+    const textbox = document.getElementById(textboxId);
+    const button = document.getElementById(buttonId);
+    button.disabled = !textbox.value.trim();
+}
+
+document.getElementById('checkbox1').addEventListener('change', function () {
+    handleCheckboxChange('checkbox1', 'textbox1', 'button1');
+});
+
+document.getElementById('checkbox2').addEventListener('change', function () {
+    handleCheckboxChange('checkbox2', 'textbox2', 'button2');
+});
+
+document.getElementById('checkbox3').addEventListener('change', function () {
+    handleCheckboxChange('checkbox3', 'textbox3', 'button3');
+});
+
+document.getElementById('textbox1').addEventListener('input', function () {
+    updateButtonStatus('textbox1', 'button1');
+});
+
+document.getElementById('textbox2').addEventListener('input', function () {
+    updateButtonStatus('textbox2', 'button2');
+});
+
+document.getElementById('textbox3').addEventListener('input', function () {
+    updateButtonStatus('textbox3', 'button3');
+});
+
+function searchBooks(searchType, searchValue) {
+    const api = `${apiStart}Books/GetSearchedBooks/searchType/${searchType}/searchValue/${searchValue}`;
+    ajaxCall("GET", api, "", searchSuccess, searchError);
+}
+
+function searchSuccess(response) {
+    console.log(response);
+
+    const serializedData = encodeURIComponent(JSON.stringify(response));
+    console.log(serializedData);
+    window.location.href = `BooksBySearchingPage.html?data=${serializedData}`;
+}
+
+function searchError(err) {
+    alert("Book already exists in your library");
+}
 
 
 // // Physical Books: saleInfo.saleability != FREE && saleInfo.isEbook == false

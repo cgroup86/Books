@@ -14,9 +14,39 @@
     <link rel="stylesheet" href="../Css/index.css">
 
     <style>
- 
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
 
-       /* Container for the Swiper slider */
+        .button-cell {
+            text-align: center;
+        }
+
+        button {
+            padding: 8px 16px;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #button1 {
+            background-color: #666; 
+        }
+
+        #button2 {
+            background-color: #28a745; 
+        }
+
+        #button3 {
+            background-color: #dc3545; 
+        }
+
+        input[type="text"]:disabled {
+            background-color: #e9ecef; 
+        }
        .tranding-slider {
     position: relative;
     width: 100%;
@@ -144,7 +174,36 @@
                 </div>
             </div>
         </section>
+        <div style="display: flex; flex-direction: column; gap: 10px; background-color: #f0f0f0; padding: 15px; border-radius: 8px;">
 
+            <table>
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Button</th>
+                        <th>Text Box</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox" id="checkbox1"></td>
+                        <td class="button-cell"><button type="button" id="button1" disabled>Put 1</button></td>
+                        <td><input type="text" id="textbox1" name="textbox1" placeholder="Enter text..." disabled></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" id="checkbox2"></td>
+                        <td class="button-cell"><button type="button" id="button2" disabled>Put 2</button></td>
+                        <td><input type="text" id="textbox2" name="textbox2" placeholder="Enter text..." disabled></td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox" id="checkbox3"></td>
+                        <td class="button-cell"><button type="button" id="button3" disabled>Put 3</button></td>
+                        <td><input type="text" id="textbox3" name="textbox3" placeholder="Enter text..." disabled></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
         <h2 class="section-title">Digital Books</h2>
         <div class="main-container" id="digital-books-container">
         </div>

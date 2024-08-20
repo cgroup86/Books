@@ -3,8 +3,13 @@ let booksReadData = [];
 let booksPurchasedData = [];
 
 $(document).ready(function() {
+  $('#header-container').load('header.html', function() {
+    LoginRegisterModalFunc();
+    checkUserStatus();
+  });
   getFromServer(); 
 });
+
 
 function getFromServer() {
   console.log("Hi from getFromServer");

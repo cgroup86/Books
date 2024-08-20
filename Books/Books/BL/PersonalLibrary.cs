@@ -94,5 +94,59 @@
                 throw new Exception("Unexpected error occurred: " + ex.Message, ex);
             }
         }
+
+        public static int AddRemoveRequestToBuy(int sellerId, int buyerId, int bookId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.AddRemoveRequestToBuy(sellerId, buyerId, bookId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+
+        }
+
+        public static int AcceptRequestToBuy(int sellerId, int buyerId, int bookId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.AcceptRequestToBuy(sellerId, buyerId, bookId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+
+        public static List<object> GetPurchasedBooksWithStatus1(int userId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.GetPurchasedBooksWithStatus1(userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+
+        public static List<object> GetRequestedBooksByBuyer(int userId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.GetRequestedBooksByBuyer(userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+        
     }
 }

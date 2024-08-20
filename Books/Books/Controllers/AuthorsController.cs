@@ -92,6 +92,24 @@ namespace Books.Controllers
             }
         }
 
+        // GET: api/<BooksController>
+        [HttpGet("getNumAuthorsInLibraries/{authorName}")]
+        public IActionResult GetNumberOfAuthorName(string authorName)
+        {
+            try
+            {
+                Author author = new Author();
+                var authors = author.getNumOfAuthorsInLibraries(authorName);
+
+                return Ok(authors);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                //return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
         //// DELETE api/<ValuesController>/5
         //[HttpDelete("{id}")]
         //public void Delete(int id)

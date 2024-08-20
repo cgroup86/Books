@@ -8,10 +8,10 @@ $(document).ready(function () {
     function renderBooks(books) {
         const instructorsList = $('.container');
         instructorsList.empty();
-        let head = <h1>${authorName}</h1>
+        let head = `<h1>${authorName}</h1>`
         instructorsList.append(head);
         books.forEach(book => {
-            let bookCard =    <div class="book-card">
+            let bookCard = `   <div class="book-card">
                   <img src="${book.smallThumbnailUrl}" alt="cover">
                   <h3>
                       <a href="${book.previewLink}" target="_blank">${book.title}</a>
@@ -20,8 +20,8 @@ $(document).ready(function () {
                       <b>Price: <span>${book.price}₪</span></b>
                   </p>
                   <button class="add-book-button" data-book-id="${book.id}">Add book</button>
-              </div>;
-
+              </div>`
+           
 
             instructorsList.append(bookCard);
         });
@@ -30,7 +30,7 @@ $(document).ready(function () {
 
     function fetchBooksFromDB(authorName) {
     console.log("hi from fetch books from data base");
-    const api = `https://localhost:7291/api/Authors/getBooksByAuthorsName/${authorName};
+    let api = `https://localhost:7291/api/Authors/getBooksByAuthorsName/${authorName}`;
     ajaxCall("GET", api, "", fetchBooksSuccess, fetchBooksError);
     }
 

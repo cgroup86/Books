@@ -1,5 +1,9 @@
 $(document).ready(function () {
-
+  $('#header-container').load('header.html', function() {
+    LoginRegisterModalFunc();
+    checkUserStatus();
+  });
+  
   $('.showScoresBtn').click(function() {
     $.ajax({
         url: 'https://localhost:7291/api/UsersScores/GetUserAndTopScores/userId/0',
