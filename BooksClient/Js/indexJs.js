@@ -139,7 +139,7 @@ function loadBooksBasedOnContainer(paginationElement, page, pageSize) {
 
 // -------------------------------------------------------------------------------------------------------------
 
-$('.main-container').on('click', '.add-book-button', function() {
+$(document).on('click', '.add-book-button', function() {
   const user = JSON.parse(sessionStorage.getItem('userData'));
     if (!user) {
         alert("You need to log in to add a book");

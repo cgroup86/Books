@@ -188,7 +188,7 @@ public class DBservices
     //--------------------------------------------------------------------------------------------------
     // This method logs the user in
     //--------------------------------------------------------------------------------------------------
-    public bool UserLogin(User user)
+    public void UserLogin(User user)
     {
 
         SqlConnection con;
@@ -210,17 +210,12 @@ public class DBservices
         {
             SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 
-            if (dataReader.Read() && Convert.ToInt32(dataReader["UserId"]) >= 0)
+            if (dataReader.Read())
             {
                 user.Id = Convert.ToInt32(dataReader["UserId"]);
-                user.Name = dataReader["name"].ToString();
-                user.IsAdmin = Convert.ToBoolean(dataReader["isAdmin"]);
-                user.IsActive = Convert.ToBoolean(dataReader["isActive"]);
-                return true;
-            }
-            else
-            {
-                return false;
+                user.Name = dataReader["Name"].ToString();
+                user.IsAdmin = Convert.ToBoolean(dataReader["IsAdmin"]);
+                user.IsActive = Convert.ToBoolean(dataReader["IsActive"]);
             }
         }
         catch (Exception ex)
@@ -2162,6 +2157,267 @@ public class DBservices
 
         cmd.Parameters.AddWithValue("@userId", userId);
         cmd.Parameters.AddWithValue("@active", isActive);
+
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method search by desc 3, author 2 and title 1. returns books list
+    //--------------------------------------------------------------------------------------------------
+    public List<Book> GetSearchedBooks(int searchType, string searchValue)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureGetSearchedBooks("SP_SearchBooks", con, searchType, searchValue); // create the command
+
+        List<Book> books = new List<Book>();
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            while (dataReader.Read())
+            {
+                Book book = new Book()
+                {
+                    Id = Convert.ToInt32(dataReader["BookId"]),
+                    Title = dataReader["BookTitle"].ToString(),
+                    Price = Convert.ToInt32(dataReader["Price"]),
+                    SmallThumbnailUrl = dataReader["SmallThumbnailUrl"].ToString(),
+                    IsEbook = bool.Parse(dataReader["IsEbook"].ToString()),
+                    IsAvailable = bool.Parse(dataReader["IsAvailable"].ToString()),
+                };
+
+                books.Add(book);
+            }
+            return books;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for reading authors
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetSearchedBooks(string spName, SqlConnection con, int searchType, string searchValue)
+    {
+        SqlCommand cmd = new SqlCommand();
+
+        cmd.Connection = con;
+        cmd.CommandText = spName;
+        cmd.CommandTimeout = 10;
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@SearchType", searchType);
+        cmd.Parameters.AddWithValue("@SearchValue", searchValue);
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets random 5 books
+    //--------------------------------------------------------------------------------------------------
+    public List<Book> GetRandom5Books()
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureGetRandom5Books("SP_GetRandomBooks", con); // create the command
+
+        List<Book> books = new List<Book>();
+        try
+        {
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            while (dataReader.Read())
+            {
+                Book book = new Book()
+                {
+                    Id = Convert.ToInt32(dataReader["BookId"]),
+                    Title = dataReader["BookTitle"].ToString(),
+                    Price = Convert.ToInt32(dataReader["price"]),
+                    SmallThumbnailUrl = dataReader["smallThumbnailUrl"].ToString(),
+                    PreviewLink = dataReader["previewLink"].ToString(),
+                    IsEbook = bool.Parse(dataReader["isEbook"].ToString()),
+                    IsAvailable = bool.Parse(dataReader["isAvailable"].ToString()),
+                };
+
+                books.Add(book);
+            }
+            return books;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for reading authors
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetRandom5Books(string spName, SqlConnection con)
+    {
+        SqlCommand cmd = new SqlCommand();
+
+        cmd.Connection = con;
+        cmd.CommandText = spName;
+        cmd.CommandTimeout = 10;
+        cmd.CommandType = CommandType.StoredProcedure;
+        return cmd;
+    }
+
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets the number of books by their ID in libraries
+    //--------------------------------------------------------------------------------------------------
+    public int getNumberOfBooksInPrivateLibrary(int bookId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureGetNumberOfBooksInPrivateLibrary("GetNumberOfBooksByPersonalLibrary", con, bookId);
+
+        try
+        {
+            int result = (int)cmd.ExecuteScalar();
+            return result;
+        }
+        catch (Exception ex)
+        {
+
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetNumberOfBooksInPrivateLibrary(String spName, SqlConnection con, int bookId)
+    {
+        SqlCommand cmd = new SqlCommand();
+
+        cmd.Connection = con;
+
+        cmd.CommandText = spName;
+
+        cmd.CommandTimeout = 10;
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@bookId", bookId);
+
+        return cmd;
+    }
+
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets the number of authors by their name in private libraries
+    //--------------------------------------------------------------------------------------------------
+    public int getNumberOfAuthorsInPrivateLibrary(string authorName)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            throw (ex); // Proper error handling should be done here
+        }
+
+        cmd = CreateCommandWithStoredProcedureGetNumberOfAuthorsInPrivateLibrary("SP_GetNumOfAurthorsByPersonalLibrary", con, authorName);
+
+        try
+        {
+            int result = (int)cmd.ExecuteScalar(); // Executes the command and retrieves the number of authors
+            return result; // Return the count of authors
+        }
+        catch (Exception ex)
+        {
+            throw (ex); // Proper error handling should be done here
+        }
+        finally
+        {
+            if (con != null)
+            {
+                con.Close(); // Ensure the connection is closed even if an exception occurs
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetNumberOfAuthorsInPrivateLibrary(string spName, SqlConnection con, string authorName)
+    {
+        SqlCommand cmd = new SqlCommand
+        {
+            Connection = con,
+            CommandText = spName,
+            CommandTimeout = 10,
+            CommandType = System.Data.CommandType.StoredProcedure
+        };
+
+        cmd.Parameters.AddWithValue("@authorName", authorName); // Pass the author name as a parameter
 
         return cmd;
     }

@@ -61,17 +61,13 @@ namespace Books.BL
             
         }
 
-        public bool Login()
+        public void Login()
         {
             try
             {
                 DBservices dBservices = new DBservices();
-                bool success = dBservices.UserLogin(this);
-                if (!success)
-                {
-                    throw new ArgumentException("Invalid email or password");
-                }
-                return true;
+                dBservices.UserLogin(this);
+                return;
             }
             catch (Exception ex) 
             { 

@@ -8,26 +8,43 @@ CREATE PROCEDURE SP_UserLogin
     @Password NVARCHAR(200)
 AS
 BEGIN
-	SET @email = LOWER(@email);
-    --SET NOCOUNT ON;
+    SET NOCOUNT ON;  
 
-    -- Check if the user exists and match the email and password
+    SET @Email = LOWER(@Email);  
+
     DECLARE @UserId INT;
-    SELECT @UserId = id
-    FROM Users
-    WHERE email = @Email AND [password] = @Password AND isActive = 1;
+	DECLARE @UserName nvarchar(200);
+    DECLARE @StoredPassword NVARCHAR(200);
+    DECLARE @IsAdmin BIT;
+    DECLARE @IsActive BIT;
 
+	SELECT @UserId = id,
+		   @UserName = [name],
+           @StoredPassword = [password],
+           @IsAdmin = isAdmin,
+           @IsActive = isActive
+    FROM Users
+    WHERE email = @Email;
+
+    -- Check if the user exists
     IF @UserId IS NULL
     BEGIN
-        -- If no user found, return 0
-        SELECT -1 AS UserId;
+        -- User does not exist
+        SELECT UserId = -1, [Name] = '', IsAdmin = 0, IsActive = 0;
     END
     ELSE
     BEGIN
-        -- If user found, return user details
-        SELECT id AS UserId, [name], isAdmin, isActive
-        FROM Users
-        WHERE id = @UserId;
+        IF @StoredPassword = @Password
+        BEGIN
+            SELECT @UserId AS UserId, 
+                   @UserName AS [Name],
+                   @IsAdmin AS IsAdmin,
+                   @IsActive AS IsActive;
+        END
+        ELSE
+        BEGIN
+            SELECT UserId = -2, [Name] = '', IsAdmin = 0, IsActive = 0;
+        END
     END
 END
 GO

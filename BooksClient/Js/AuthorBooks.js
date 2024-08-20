@@ -1,6 +1,6 @@
-const authorName = localStorage.getItem("authorName");
-  $(document).ready(function () {
-      console.log(authorName);
+const urlParams = new URLSearchParams(window.location.search);
+const authorName = urlParams.get('authorName');
+$(document).ready(function () {
       fetchBooksFromDB(authorName);
     });
 
@@ -11,8 +11,7 @@ const authorName = localStorage.getItem("authorName");
         let head = <h1>${authorName}</h1>
         instructorsList.append(head);
         books.forEach(book => {
-            let bookCard = 
-              <div class="book-card">
+            let bookCard =    <div class="book-card">
                   <img src="${book.smallThumbnailUrl}" alt="cover">
                   <h3>
                       <a href="${book.previewLink}" target="_blank">${book.title}</a>
@@ -23,16 +22,18 @@ const authorName = localStorage.getItem("authorName");
                   <button class="add-book-button" data-book-id="${book.id}">Add book</button>
               </div>;
 
+
             instructorsList.append(bookCard);
         });
     }
 
+
     function fetchBooksFromDB(authorName) {
-        console.log("hi from fetch books from data base");
-        //https://localhost:7291/api/Authors/getBooksByAuthorsName/Walter%20Scott
-        const api = 'https://localhost:7291/api/Authors/getBooksByAuthorsName/${authorName}';
-        ajaxCall("GET", api, "", fetchBooksSuccess, fetchBooksError);
+    console.log("hi from fetch books from data base");
+    const api = `https://localhost:7291/api/Authors/getBooksByAuthorsName/${authorName};
+    ajaxCall("GET", api, "", fetchBooksSuccess, fetchBooksError);
     }
+
 
     function fetchBooksSuccess(response) {
         console.log("Success response: ", response);

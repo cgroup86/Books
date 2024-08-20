@@ -87,5 +87,18 @@
                 throw ex;
             }
         }
+
+        public int getNumOfAuthorsInLibraries(string authorName)
+        {
+            try
+            {
+                DBservices dbservices = new DBservices();
+                return dbservices.getNumberOfAuthorsInPrivateLibrary(authorName);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

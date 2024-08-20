@@ -16,6 +16,7 @@ BEGIN
 
 	SET NOCOUNT ON;
 
-	select top 5 *  from [Books] where [BookTitle] != '' and isEbook = 1  order by  NEWID()
+	select top 5 BookId, BookTitle, Price, smallThumbnailUrl,previewLink, isEbook, isAvailable
+	from [Books] where [BookTitle] != '' and isEbook = 1 and isActive = 1 order by  NEWID()
 END
 GO

@@ -49,11 +49,18 @@ namespace Books.Controllers
             try
             {
                 user.Login();
-                return Ok(new { id = user.Id, message = "Logged in successfully", name = user.Name, isActive = user.IsActive, isAdmin = user.IsAdmin });
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { error = ex.Message });
+                if (user.Id >= 0)
+                {
+                    return Ok(new { id = user.Id, message = "Logged in successfully", name = user.Name, isActive = user.IsActive, isAdmin = user.IsAdmin });
+                }
+                else if (user.Id == -2)
+                {
+                    return Unauthorized(new { message = "Incorrect password" });
+                }
+                else
+                {
+                    return NotFound(new { message = "User does not exist" });
+                }
             }
             catch (Exception ex)
             {

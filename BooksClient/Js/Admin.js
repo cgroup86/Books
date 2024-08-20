@@ -8,7 +8,7 @@ $(document).ready(function () {
 
 function getFromServer() {
 
-    // Define the API URLs
+    //  API URLs
     const booksApi = `${apiStart}/Books/get10BooksPerPage/${currentPage}/${pageSize}`;
     const authorsApi = `${apiStart}/Authors/get10AuthorsPerPage/${currentPage}/${pageSize}`;
     const usersApi = `${apiStart}/Users`;
@@ -21,13 +21,11 @@ function getFromServer() {
 
     //// Fetch Authors
     ajaxCall("GET", authorsApi, "", function (authors) {
-        console.log("Authors:", authors);
-        renderAuthorssTable('#authorsTable', authors, "Authors");
+        renderAuthorsTable('#authorsTable', authors, "Authors");
     }, getBooksECB);
 
     //// Fetch Books Purchased
     ajaxCall("GET", usersApi, "", function (users) {
-        console.log("Users:", users);
         renderUsersTable('#usersTable', users, "Users");
     }, getBooksECB);
 }
@@ -35,7 +33,7 @@ function getFromServer() {
 function getBooksECB(err) {
     console.log(err);
 }
-
+const number=0;
 function renderBooksTable(tableId, tableData, title) {
     try {
         if (!$.fn.DataTable.isDataTable(tableId)) {
@@ -138,23 +136,22 @@ function renderBooksTable(tableId, tableData, title) {
     }
 }
 
-
-$(document).on('click', 'button.DescriptionModalBtn', function () {///////////////// show books description
+$(document).on('click', 'button.DescriptionModalBtn', function () {
     var table = $('#booksTable').DataTable();
     var rowData = table.row($(this).parents('tr')).data();
-    $('#modalLabel').text('Details for ID: ' + rowData.id); 
-    $('#modalContent').html('<p><strong>Title:</strong> ' + rowData.title + '</p>' +
-        '<p><strong>Prints:</strong> ' + rowData.description + '</p>');
-    $('#actionModal').modal('show');
+    getBookNumberInAllPrivateLibraries(rowData.id, function (bookCount) {
+        $('#modalLabel').text('Details for ID: ' + rowData.id);
+        $('#modalContent').html('<p><strong>Title:</strong> ' + rowData.title + '</p>' +
+         '<p><strong>Prints:</strong> ' + rowData.description + '</p>' +
+            '<p><strong>Number in Private Libraries:</strong> ' + bookCount + '</p>');
+        $('#actionModal').modal('show');
+    });
 });
-
-
 
 $(document).on('click', 'button.ChangeBookValuesModalBtn', function () {
     var table = $('#booksTable').DataTable();
     var rowData = table.row($(this).parents('tr')).data();
 
-    // Update the modal label with the selected row's ID
     $('#modalLabel').text('Details for ID: ' + rowData.id);
 
     $('#modalContent').html(
@@ -173,7 +170,6 @@ $(document).on('click', 'button.ChangeBookValuesModalBtn', function () {
         '<button id="saveBookChangesBtn" class="btn btn-primary">Save</button>'
     );
 
-    // Show the modal
     $('#actionModal').modal('show');
 });
 
@@ -186,13 +182,11 @@ $(document).on('click', '#saveBookChangesBtn', function () {
 
     putBooksChangesToServer(bookId, updatedIsActive, updatedPrice, updatedPrints);
 
-    // Close the modal after saving changes (if applicable)
     $('#actionModal').modal('hide');
 });
 
 
 function putBooksChangesToServer(bookId, isActive,price,prints) {
-    console.log("Fetching authors from server");
     let api = `${apiStart}/Books/UpdateBookValuesById/book Id/${bookId}/Is Active/${isActive}/price/${price}/NumberOfPrints/${prints}`;
     ajaxCall("PUT", api, "", updateBooksSCB, updateBooksECB);
 }
@@ -207,9 +201,18 @@ function updateBooksECB(err) {
 }
 
 
+function getBookNumberInAllPrivateLibraries(bookId, callback) {
+    let api = `${apiStart}/Books/getNumBooksInLibraries/${bookId}`;
+    ajaxCall("GET", api, "", function (status) {
+        callback(status); 
+    }, function (err) {
+        console.log(err);
+        callback(0); 
+    });
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function renderAuthorssTable(tableId, tableData, title) {
-    console.log("data To Read:", tableData);
+function renderAuthorsTable(tableId, tableData, title) {
     try {
         if (!$.fn.DataTable.isDataTable(tableId)) {
             $(tableId).DataTable({
@@ -264,29 +267,56 @@ function renderAuthorssTable(tableId, tableData, title) {
                         title: "Work Count"
                     },
                     {
-                        data: "description",
-                        title: "Description"
-                    }, 
+                        data: null,
+                        defaultContent: '<button class="btn authorDescriptionModalBtn">Description</button>',
+                        title: "Description",
+                        orderable: false
+                    },
 
                 ],
             });
 
-            //// Bind button events for the newly rendered table
-            //buttonEvents(tableId);
         } else {
-            // Update existing DataTable if needed
             $(tableId).DataTable().clear().rows.add(tableData).draw();
         }
     } catch (err) {
         alert(err);
     }
 }
+$(document).on('click', 'button.authorDescriptionModalBtn', function () {
+    var table = $('#authorsTable').DataTable();
+    var rowData = table.row($(this).parents('tr')).data();
+
+    getNumberOfAuthorsFromServer(rowData.name, function (authorCount) {
+        $('#modalLabel').text('Details for: ' + rowData.name);
+        $('#modalContent').html(
+            '<p><strong>Prints:</strong> ' + rowData.topWork + '</p>' +
+            '<p><strong>Work Count:</strong> ' + rowData.workCount + '</p>' +
+            '<p><strong>Number in Private Libraries:</strong> ' + authorCount + '</p>'
+        );
+        $('#actionModal').modal('show');
+    });
+});
+
+function getNumberOfAuthorsFromServer(authorName, callback) {
+    let api = `${apiStart}/Authors/getNumAuthorsInLibraries/${encodeURIComponent(authorName)}`;
+    ajaxCall("GET", api, "", function (response) {
+        callback(response);
+    }, bumberOfAuthersECB);
+}
 
 
+function bumberOfAuthersSCB(status) {
+    $('#authorsTable').DataTable().clear();
+    getFromServer();
+}
+
+function bumberOfAuthersECB(err) {
+    console.log(err);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function renderUsersTable(tableId, tableData, title) {
-    console.log("data To Read:", tableData);
     try {
         if (!$.fn.DataTable.isDataTable(tableId)) {
             $(tableId).DataTable({
@@ -303,14 +333,12 @@ function renderUsersTable(tableId, tableData, title) {
                             getFromServer(currentPage, pageSize);
                         });
 
-                    // Event handler for page number buttons
                     $('.paginate_button:not(.next, .previous)', table.table().container())
                         .on('click', function () {
-                            var clickedPageIndex = $(this).text() - 1; // Adjust to zero-based index
+                            var clickedPageIndex = $(this).text() - 1; 
 
                         });
 
-                    // Event handler for the "Previous" button
                     $('.paginate_button.previous:not(.disabled)', table.table().container())
                         .on('click', function () {
                             if (currentPage > 1) {
@@ -346,10 +374,8 @@ function renderUsersTable(tableId, tableData, title) {
                 ],
             });
 
-            //// Bind button events for the newly rendered table
-            //buttonEvents(tableId);
         } else {
-            // Update existing DataTable if needed
+
             $(tableId).DataTable().clear().rows.add(tableData).draw();
         }
     } catch (err) {
@@ -360,7 +386,6 @@ $(document).on('click', 'button.ChangeUserStatusModalBtn', function () {
     var table = $('#usersTable').DataTable();
     var rowData = table.row($(this).parents('tr')).data();
 
-    // Update the modal label with the selected row's ID
     $('#modalLabel').text('Details for ID: ' + rowData.id);
 
     $('#modalContent').html(
@@ -371,7 +396,6 @@ $(document).on('click', 'button.ChangeUserStatusModalBtn', function () {
         '<button id="saveUserChangesBtn" class="btn btn-primary">Save</button>'
     );
 
-    // Show the modal
     $('#actionModal').modal('show');
 });
 
@@ -382,7 +406,6 @@ $(document).on('click', '#saveUserChangesBtn', function () {
 
     putUserChangesToServer(userId, updatedIsActive);
 
-    // Close the modal after saving changes (if applicable)
     $('#actionModal').modal('hide');
 });
 

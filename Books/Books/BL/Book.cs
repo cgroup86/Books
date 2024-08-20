@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Microsoft.AspNetCore.Server.IIS.Core;
+using System.Data;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Books.BL
@@ -152,5 +154,46 @@ namespace Books.BL
                 throw ex;
             }
         }
+
+        public static List<Book> GetRandom5Books()
+        {
+            try
+            {
+                DBservices dbservices = new DBservices();
+                return dbservices.GetRandom5Books();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public static List<Book> GetSearchedBooks(int searchType, string searchValue)
+        {
+            try
+            {
+                DBservices dBservices = new DBservices();
+                return dBservices.GetSearchedBooks(searchType, searchValue);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public int getNumOfBooksInLibraries(int bookId)
+        {
+            try
+            {
+                DBservices dbservices = new DBservices();
+                return dbservices.getNumberOfBooksInPrivateLibrary(bookId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
     }
 }

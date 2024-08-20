@@ -60,11 +60,13 @@ function LoginRegisterModalFunc() {
   $('#openRegisterModalFooter').click(function() {
     $('#loginModal').hide();
     $('#registerModal').show();
+    $('#loginForm')[0].reset();
   });
 
   $('#openLoginModalFooter').click(function() {
     $('#registerModal').hide();
     $('#loginModal').show();
+    $('#registerForm')[0].reset(); 
   });
 
   $("#loginForm").submit(function (e) {
@@ -88,7 +90,14 @@ function LoginRegisterModalFunc() {
 
   function loginSuccess(response) {
     //console.log(response);
-
+    if (response.isActive === false) {
+      Swal.fire({
+        icon: 'error',
+        title: 'User is banned',
+        text: 'User is banned'
+      });
+      return;
+    }
     if (response.isAdmin === true) {
       // TODO: Redirect to admin panel
       return;
@@ -115,13 +124,21 @@ function LoginRegisterModalFunc() {
   }
 
   function loginError(err) {
-    //console.log(err);
-    ///console.log(err.responseJSON)
-    if (err.responseJSON.error === 'Invalid email or password') {
+
+    if (err.responseJSON.message === 'User does not exist') {
       Swal.fire({
         icon: 'error',
-        title: 'User is banned',
-        text: err.responseJSON.error
+        title: 'User does not exist',
+        text: err.responseJSON.message
+      });
+      return;
+    }
+
+    if (err.responseJSON.message === 'Incorrect password') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Incorrect password',
+        text: err.responseJSON.message
       });
       return;
     }
@@ -146,7 +163,7 @@ function LoginRegisterModalFunc() {
         IsAdmin: false,
         IsActive: true,
     };
-
+    
     ajaxCall("POST", api, JSON.stringify(registerData), registerSuccess, registerError);
   });
 
@@ -156,9 +173,11 @@ function LoginRegisterModalFunc() {
         title: 'Success!',
         text: 'Registration successful'
     }).then(() => {
-        // Automatically log in the user after successful registration
         loginUser($('#registerEmail').val(), $('#registerPassword').val());
+        $('#registerModal').hide();
+        $('#registerForm')[0].reset();
     });
+   
   }
 
   function registerError(err) {

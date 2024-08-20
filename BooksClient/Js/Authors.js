@@ -152,6 +152,7 @@ const pageSize = 10; // Number of authors per page
 const array = []; // Store fetched authors
 
 $(document).ready(function () {
+    localStorage.clear();
     getFromServer(currentPage, pageSize);
 
     $('#prevPageBtn').click(function () {
@@ -236,13 +237,20 @@ function renderAuthors(authors) {
     });
 
     // Handle "Show books" button click for each author
+    //$(".show-Author-Books-button").click(function (event) {
+    //    event.stopPropagation();
+    //    const authorName = $(this).closest(".item").data("author-name");
+    //    console.log(authorName);
+    //    localStorage.setItem("authorName", authorName);
+    //    window.location.href = "http://localhost:60430/Html/AuthorsBooks.html";
+    //});
     $(".show-Author-Books-button").click(function (event) {
         event.stopPropagation();
         const authorName = $(this).closest(".item").data("author-name");
         console.log(authorName);
-        localStorage.setItem("authorName", authorName);
-        window.location.href = "http://localhost:60430/Html/AuthorsBooks.html";
+        window.location.href = `http://localhost:60430/Html/AuthorsBooks.html?authorName=${encodeURIComponent(authorName)}`;
     });
+
 }
 
 function fetchAuthorDetails(List, name) {
@@ -264,3 +272,4 @@ function showModal(author) {
     $("#modal-author-workCount").text(`Work Count: ${author.workCount || 'No Work Count'}`);
     $("#authorModal").modal('show');
 }
+

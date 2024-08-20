@@ -16,7 +16,8 @@ namespace Books.Controllers
             {
                 return Ok(book.InsertBook());
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
             }
         }
@@ -28,11 +29,9 @@ namespace Books.Controllers
             try
             {
                 Book book = new Book();
-                // Get the paged books and total record count
                 int totalRecords = 0;
                 List<Book> books = book.Read(isEbook, pageNumber, pageSize, out totalRecords, fetchTotalCount);
 
-                // Create a response with pagination metadata
                 var response = new
                 {
                     IsEbook = isEbook,
@@ -59,7 +58,6 @@ namespace Books.Controllers
             try
             {
                 Book book = new Book();
-                // Get the paged books and total record count
                 var books = book.ReadAllBooks(pageNumber, pageSize);
 
                 return Ok(books);
@@ -89,6 +87,61 @@ namespace Books.Controllers
             }
         }
 
+
+        // GET: api/<BooksController>
+        [HttpGet("GetRandom5Books")]
+        public IActionResult GetRandom5Books()
+        {
+            try
+            {
+                var books = Book.GetRandom5Books();
+
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                //return BadRequest(ex.Message);
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
+
+        // GET: api/<BooksController>
+        [HttpGet("GetSearchedBooks/searchType/{searchType}/searchValue/{searchValue}")]
+        public IActionResult GetSearchedBooks(int searchType, string searchValue)
+        {
+            try
+            {
+                var books = Book.GetSearchedBooks(searchType, searchValue);
+
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                //return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
+
+        // GET: api/<BooksController>
+        [HttpGet("getNumBooksInLibraries/{bookId}")]
+        public IActionResult Get(int bookId)
+        {
+            try
+            {
+                Book book = new Book();
+                // Get the paged books and total record count
+                var books = book.getNumOfBooksInLibraries(bookId);
+
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+                //return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
         //// GET: api/<BooksController>
         //[HttpGet]
         //public IEnumerable<string> Get()
