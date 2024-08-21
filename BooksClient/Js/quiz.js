@@ -1,108 +1,107 @@
 $(document).ready(function () {
-  $('#header-container').load('header.html', function() {
-    LoginRegisterModalFunc();
-    checkUserStatus();
-  });
-  
-  $('.showScoresBtn').click(function() {
-    $.ajax({
-        url: 'https://localhost:7291/api/UsersScores/GetUserAndTopScores/userId/0',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            $('#showUserScores').html(`
+    $('.showScoresBtn').click(function () {
+        const user = JSON.parse(sessionStorage.getItem('userData'));
+        const userId = user.userId;
+        $.ajax({
+            url: `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/UsersScores/GetUserAndTopScores/userId/${userId}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                $('#showUserScores').html(`
                 <p><strong>User Score:</strong> ${data.score}</p>
             `);
 
-            $('#showTopScoresList').empty();
-            data.topUserScores.forEach(function(score) {
-                $('#showTopScoresList').append(`
+                $('#showTopScoresList').empty();
+                data.topUserScores.forEach(function (score) {
+                    $('#showTopScoresList').append(`
                     <li>${score.userName}: ${score.score}</li>
                 `);
-            });
+                });
 
-            $('#showScoresModal').modal('show');
-        },
-        error: function(err) {
-            console.error('Error fetching data:', err);
-        }
+                $('#showScoresModal').modal('show');
+            },
+            error: function (err) {
+                console.error('Error fetching data:', err);
+            }
+        });
     });
-  });
 
-  // Close the "Show Scores" modal
-  $('#closeShowScoresBtn').click(function() {
-      $('#showScoresModal').modal('hide');
-  });
+    $('#closeShowScoresBtn').click(function () {
+        $('#showScoresModal').modal('hide');
+    });
 
 
-// ------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------
 
-function submitScore(userId, score) {
-    //console.log("HIHIHIHIHIHIHI");
-    const api = 'https://localhost:7291/api/UsersScores/GetUserAndTopScores/userId/0';
+    function submitScore(userId, score) {
+        const user = JSON.parse(sessionStorage.getItem('userData'));
+        userId = user.userId;
+        //console.log("HIHIHIHIHIHIHI");
+        const api = `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/UsersScores/GetUserAndTopScores/userId/${userId}`;
 
-    ajaxCall("GET", api, null, submitScoreSCB, submitScoreECB);
-}
+        ajaxCall("GET", api, null, submitScoreSCB, submitScoreECB);
+    }
 
-function submitScoreSCB(data) {
-    $('#userScores').html(`
+    function submitScoreSCB(data) {
+        $('#userScores').html(`
           <p><strong>User Score:</strong> ${data.score}</p>
         `);
 
         $('#topScoresList').empty();
-        data.topUserScores.forEach(function(score) {
-          $('#topScoresList').append(`
+        data.topUserScores.forEach(function (score) {
+            $('#topScoresList').append(`
             <li>${score.userName}: ${score.score}</li>
           `);
         });
 
         $('#scoresModal').modal('show');
-}
+    }
 
-function submitScoreECB(error) {
-  console.error('Error fetching data:', error);
-}
-// ------------------------------------------------------------------------------------------------
+    function submitScoreECB(error) {
+        console.error('Error fetching data:', error);
+    }
+    // ------------------------------------------------------------------------------------------------
 
-let currentQuestionIndex = 0;
-let score = 0;
-let timer;
-const totalQuestions = 5;
-const questions = []; 
-const userId = 1; 
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalQuestions = 5;
+    const questions = [];
 
-function startTimer() {
-    let time = 59;
-    $('#timer').text(`Time: ${time}s`);
-    timer = setInterval(() => {
-        time--;
+    const user = JSON.parse(sessionStorage.getItem('userData'));
+    const userId = user.userId;
+    function startTimer() {
+        let time = 59;
         $('#timer').text(`Time: ${time}s`);
-        if (time <= 0) {
-            clearInterval(timer);
-            submitAnswer();
-        }
-    }, 1000);
-}
+        timer = setInterval(() => {
+            time--;
+            $('#timer').text(`Time: ${time}s`);
+            if (time <= 0) {
+                clearInterval(timer);
+                submitAnswer();
+            }
+        }, 1000);
+    }
 
-function loadQuestion(index) {
-    $.ajax({
-        url: `https://localhost:7291/api/questions/GetQuestion${index + 1}`,
-        method: 'GET',
-        success: function (data) {
-            questions[index] = data; 
-            renderQuestion(data);
-            startTimer();
-        },
-        error: function () {
-            alert('Failed to load question.');
-        }
-    });
-}
+    function loadQuestion(index) {
+        $.ajax({
+            url: `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/questions/GetQuestion${index + 1}`,
+            method: 'GET',
+            success: function (data) {
+                questions[index] = data;
+                renderQuestion(data);
+                startTimer();
+            },
+            error: function () {
+                alert('Failed to load question.');
+            }
+        });
+    }
 
-// ------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------
 
-function renderQuestion(question) {
-    $('#questionContainer').html(`
+    function renderQuestion(question) {
+        $('#questionContainer').html(`
         <h3>${question.questionText}</h3>
         ${question.answers.map((answer, idx) => {
             if (typeof answer === 'object') {
@@ -127,85 +126,85 @@ function renderQuestion(question) {
             }
         }).join('')}
     `);
-}
+    }
 
-// ------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------
 
-function submitScore(userId, score) {
-    //console.log("HIHIHIHIHIHIHI");
-    const api = `https://localhost:7291/api/UsersScores`;
+    function submitScore(userId, score) {
+        //console.log("HIHIHIHIHIHIHI");
+        const api = `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/UsersScores`;
 
-    const score20Times = score * 20; 
-    const userScore = {
-        userId: userId,
-        score: score20Times,
-        topUserScores: [] 
-    };
+        const score20Times = score * 20;
+        const userScore = {
+            userId: userId,
+            score: score20Times,
+            topUserScores: []
+        };
 
-    ajaxCall("PUT", api, JSON.stringify(userScore), submitScoreSCB, submitScoreECB);
-}
+        ajaxCall("PUT", api, JSON.stringify(userScore), submitScoreSCB, submitScoreECB);
+    }
 
-function submitScoreSCB(stats) {
-    //console.log('Score submitted successfully.');
-}
+    function submitScoreSCB(stats) {
+        //console.log('Score submitted successfully.');
+    }
 
-function submitScoreECB(err) {
-    console.error('Failed to submit score.');
-}
+    function submitScoreECB(err) {
+        console.error('Failed to submit score.');
+    }
 
-// ------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------
 
-function submitAnswer() {
-    clearInterval(timer);
-    const selectedAnswer = $('input[name="answer"]:checked').val();
-    if (selectedAnswer) {
-        if (questions[currentQuestionIndex] && questions[currentQuestionIndex].correctAnswer) {
-            const correctAnswer = questions[currentQuestionIndex].correctAnswer;
-            if (selectedAnswer === correctAnswer) {
-                score++;
+    function submitAnswer() {
+        clearInterval(timer);
+        const selectedAnswer = $('input[name="answer"]:checked').val();
+        if (selectedAnswer) {
+            if (questions[currentQuestionIndex] && questions[currentQuestionIndex].correctAnswer) {
+                const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+                if (selectedAnswer === correctAnswer) {
+                    score++;
+                }
+            } else {
+                console.error('Current question data is not available.');
             }
+        }
+        currentQuestionIndex++;
+        if (currentQuestionIndex < totalQuestions) {
+            loadQuestion(currentQuestionIndex);
         } else {
-            console.error('Current question data is not available.');
+            $('#quizPage').addClass('d-none');
+            $('#scorePage').removeClass('d-none');
+            $('#score').text(`Your score: ${score}/${totalQuestions}`);
+            submitScore(userId, score);
         }
     }
-    currentQuestionIndex++;
-    if (currentQuestionIndex < totalQuestions) {
+
+    $('#startQuiz').on('click', function () {
+        $('#homePage').addClass('d-none');
+        $('#quizPage').removeClass('d-none');
+        $('#exitQuiz').show();
         loadQuestion(currentQuestionIndex);
-    } else {
+    });
+
+    $('#submitAnswer').on('click', function () {
+        submitAnswer();
+    });
+
+    $('#startNewQuiz').on('click', function () {
+        $('#scorePage').addClass('d-none');
+        $('#quizPage').removeClass('d-none');
+        currentQuestionIndex = 0;
+        score = 0;
+        loadQuestion(currentQuestionIndex);
+    });
+
+    $('#exitQuiz').on('click', function () {
+        clearInterval(timer);
+        currentQuestionIndex = 0;
+        score = 0;
         $('#quizPage').addClass('d-none');
-        $('#scorePage').removeClass('d-none');
-        $('#score').text(`Your score: ${score}/${totalQuestions}`);
-        submitScore(userId, score); 
-    }
-}
+        $('#homePage').removeClass('d-none');
+        $('#exitQuiz').hide();
+    });
 
-$('#startQuiz').on('click', function () {
-    $('#homePage').addClass('d-none');
-    $('#quizPage').removeClass('d-none');
-    $('#exitQuiz').show();
-    loadQuestion(currentQuestionIndex);
-});
-
-$('#submitAnswer').on('click', function () {
-    submitAnswer();
-});
-
-$('#startNewQuiz').on('click', function () {
-    $('#scorePage').addClass('d-none');
-    $('#quizPage').removeClass('d-none');
-    currentQuestionIndex = 0;
-    score = 0;
-    loadQuestion(currentQuestionIndex);
-});
-
-$('#exitQuiz').on('click', function () {
-    clearInterval(timer);
-    currentQuestionIndex = 0; 
-    score = 0; 
-    $('#quizPage').addClass('d-none'); 
-    $('#homePage').removeClass('d-none');
-    $('#exitQuiz').hide(); 
-});
-
-$('#exitQuiz').hide();
+    $('#exitQuiz').hide();
 });

@@ -23,7 +23,7 @@ namespace Books.BL
             //this.Library = library;
         }
 
-        public User () { }
+        public User() { }
 
         public int Id { get => id; set => id = value; }
         public string Name { get => name; set => name = value; }
@@ -58,7 +58,7 @@ namespace Books.BL
             {
                 throw ex;
             }
-            
+
         }
 
         public void Login()
@@ -69,8 +69,8 @@ namespace Books.BL
                 dBservices.UserLogin(this);
                 return;
             }
-            catch (Exception ex) 
-            { 
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }

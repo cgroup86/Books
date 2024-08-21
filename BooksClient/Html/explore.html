@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Books Embedded Viewer API Example</title>
+    <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #viewerCanvas {
+            width: 100%;
+            height: 100vh;
+            max-width: 100%; 
+            max-height: 90vh; 
+            margin: 0 auto;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script type="text/javascript">
+        google.books.load();
+
+        function initialize() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = urlParams.get('bookId');
+
+            if (bookId) {
+                var viewer = new google.books.DefaultViewer(document.getElementById('viewerCanvas'));
+                viewer.load(bookId); 
+            } else {
+                document.getElementById('viewerCanvas').innerHTML = "The book isn't available.";
+            }
+        }
+
+        google.books.setOnLoadCallback(initialize);
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</head>
+<body>
+    <div id="viewerCanvas"></div>
+    <button class="back-button" onclick="goBack()">Go Back</button>
+
+</body>
+</html>

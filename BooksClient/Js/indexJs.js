@@ -3,6 +3,90 @@ $(document).ready(function() {
       LoginRegisterModalFunc();
       checkUserStatus();
   });
+
+
+    $('#search-form').on('submit', function (e) {
+        e.preventDefault();
+
+        var searchValue = $('#search-value').val();
+        var searchType = $('#search-type').val();
+
+        $.ajax({
+            url: `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/Books/GetSearchedBooks/searchType/${searchType}/searchValue/${searchValue}`,
+            method: 'GET',
+            success: function (data) {
+                var container = $('#search-results-container');
+                container.empty();
+
+                if (data.length === 0) {
+                    container.append('<p>No data was found.</p>');
+                } else {
+                    data.forEach(function (book) {
+                        console.log(book);
+                        var bookItemHtml = `
+                                            <div class="book-item">
+                                                <img src="${book.smallThumbnailUrl}" alt="${book.title}" />
+                                                <div class="details">
+                                                    <div class="title">${book.title}</div>
+                                                    <div class="price">Price: ₪${book.price}</div>
+                                                    <a href="${book.previewLink}" class="preview-link" target="_blank">Preview</a>
+                                                    <button class="add-book-button" data-book-id="${book.id}" data-is-ebook="${book.isEbook}" data-book-available="${book.isEbook || book.isAvailable}">Add book</button>
+                                                </div>
+                                            </div>`;
+                        container.append(bookItemHtml);
+                    });
+                }
+
+            },
+            error: function (error) {
+                console.error('Error getting search results:', error);
+            }
+        });
+    });
+
+    $.ajax({
+        url: 'https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/Books/GetRandom5Books',
+        method: 'GET',
+        success: function (data) {
+            var swiperWrapper = $('#swiper-wrapper');
+            data.forEach(function (book) {
+                var slideHtml = `
+                                    <div class="swiper-slide">
+                                        <img src="${book.smallThumbnailUrl}" alt="${book.title}" />
+                                        <h3>${book.title}</h3>
+                                        <p>Price: ₪${book.price}</p>
+                                        <a href="${book.previewLink}" target="_blank">Preview</a>
+                                        <button class="add-book-button" data-book-id="${book.id}" data-is-ebook="${book.isEbook}" data-book-available="${book.isEbook || book.isAvailable}">Add book</button>
+                                    </div>`;
+                swiperWrapper.append(slideHtml);
+            });
+
+            var TrendingSlider = new Swiper('.tranding-slider', {
+                effect: 'coverflow',
+                grabCursor: true,
+                centeredSlides: true,
+                loop: true,
+                slidesPerView: 'auto',
+                coverflowEffect: {
+                    rotate: 0,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 2.5,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                }
+            });
+        },
+        error: function (error) {
+            console.error('Error getting data:', error);
+        }
+    });
 });
 
 
@@ -139,25 +223,72 @@ function loadBooksBasedOnContainer(paginationElement, page, pageSize) {
 
 // -------------------------------------------------------------------------------------------------------------
 
-$(document).on('click', '.add-book-button', function() {
-  const user = JSON.parse(sessionStorage.getItem('userData'));
+$(document).on('click', '.add-book-button', function () {
+    const user = JSON.parse(sessionStorage.getItem('userData'));
     if (!user) {
         alert("You need to log in to add a book");
-    }
-    else {
-      const button = $(this);
-      const bookId = button.data('book-id');
-      const isEbook = button.data('is-ebook');
-      const isAvailable = button.data('book-available');
+    } else {
+        const button = $(this);
+        const bookId = button.data('book-id');
+        const isEbook = button.data('is-ebook');
+        const isAvailable = button.data('book-available');
+        const userId = user.userId;
 
-      if (!isEbook && !isAvailable) {
-          alert('This book is out of stock.');
-          return;
-      }
-      addToLibrary(bookId, isEbook);
+        if (!isEbook && !isAvailable) {
+            $.ajax({
+                url: `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/PersonalLibraries/GetWhoOwnTheBook/bookId/${bookId}`,
+                type: 'GET',
+                success: function (response) {
+                    const sellerId = response[0].sellerId;
+                    console.log("Seller ID for the book purchase: ", sellerId);
+
+                    $('#modalLabel').text('This book is out of stock');
+
+                    let modalContent = '<div class="form-group">';
+                    modalContent += `<h3>You can ${sellerId === -1 ? "not" : ""} make or declare a request for purchase for this book</h3>`;
+                    modalContent += '<p>This book is in the hands of another user</p>';
+
+                    if (sellerId !== -1) {
+                        modalContent += `<button id="saveUserChangesBtn" class="btn btn-primary" ` +
+                            `data-user-id="${userId}" data-book-id="${bookId}" data-seller-id="${sellerId}">Request or declare</button>`;
+                    }
+
+                    modalContent += '</div>';
+
+                    $('#modalContent').html(modalContent);
+                    $('#actionModal').modal('show');
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred while retrieving seller information.');
+                }
+            });
+            return;
+        }
+        addToLibrary(bookId, isEbook);
     }
-  });
-  
+});
+
+
+$(document).on('click', '#saveUserChangesBtn', function () {
+    const button = $(this);
+    const userId = button.data('user-id');
+    const bookId = button.data('book-id');
+    const sellerId = button.data('seller-id');
+
+    $.ajax({
+        url: `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/PersonalLibraries/AddRemoveRequestToBuy/sellerId/${sellerId}/buyerId/${userId}/bookId/${bookId}`, 
+        type: 'PUT',
+        contentType: 'application/json',
+        success: function (response) {
+            alert('Your request has been submitted successfully.');
+        },
+        error: function (xhr, status, error) {
+            alert('An error occurred while submitting your request.');
+        }
+    });
+});
+
+
 function addToLibrary(bookId, isEbook) {
   //console.log("addToLibrary  bookId:", bookId, "isEbook:", isEbook);
     const user = JSON.parse(sessionStorage.getItem('userData'));
@@ -189,336 +320,3 @@ function addBookError(err) {
     alert("Book already exists on your library");
 }
 
-function handleCheckboxChange(checkboxId, textboxId, buttonId) {
-    const checkbox = document.getElementById(checkboxId);
-    const textbox = document.getElementById(textboxId);
-    const button = document.getElementById(buttonId);
-
-    textbox.disabled = !checkbox.checked;
-    button.disabled = !textbox.value.trim();
-
-    button.addEventListener('click', function () {
-        if (!button.disabled) {
-            searchBooks(checkboxId.replace('checkbox', ''), textbox.value.trim());
-        }
-    });
-}
-
-function updateButtonStatus(textboxId, buttonId) {
-    const textbox = document.getElementById(textboxId);
-    const button = document.getElementById(buttonId);
-    button.disabled = !textbox.value.trim();
-}
-
-document.getElementById('checkbox1').addEventListener('change', function () {
-    handleCheckboxChange('checkbox1', 'textbox1', 'button1');
-});
-
-document.getElementById('checkbox2').addEventListener('change', function () {
-    handleCheckboxChange('checkbox2', 'textbox2', 'button2');
-});
-
-document.getElementById('checkbox3').addEventListener('change', function () {
-    handleCheckboxChange('checkbox3', 'textbox3', 'button3');
-});
-
-document.getElementById('textbox1').addEventListener('input', function () {
-    updateButtonStatus('textbox1', 'button1');
-});
-
-document.getElementById('textbox2').addEventListener('input', function () {
-    updateButtonStatus('textbox2', 'button2');
-});
-
-document.getElementById('textbox3').addEventListener('input', function () {
-    updateButtonStatus('textbox3', 'button3');
-});
-
-function searchBooks(searchType, searchValue) {
-    const api = `${apiStart}Books/GetSearchedBooks/searchType/${searchType}/searchValue/${searchValue}`;
-    ajaxCall("GET", api, "", searchSuccess, searchError);
-}
-
-function searchSuccess(response) {
-    console.log(response);
-
-    const serializedData = encodeURIComponent(JSON.stringify(response));
-    console.log(serializedData);
-    window.location.href = `BooksBySearchingPage.html?data=${serializedData}`;
-}
-
-function searchError(err) {
-    alert("Book already exists in your library");
-}
-
-
-// // Physical Books: saleInfo.saleability != FREE && saleInfo.isEbook == false
-  // // Digital Books: saleInfo.isEbook == true
-  // var books = [];
-  // $.getJSON("../DataJson/books.json", function(data) {
-  //     books = data;
-  //     console.log("All:")
-  //     console.log(books);
-  //     insertBooksToDB(books);
-
-  //     // Initialize an empty set to store unique author names
-  //     let authorNames = new Set();
-  //     let categoryNames = new Set();
-  //     // Loop through each book in the data
-  //     books.forEach(item => {
-  //         // Check if volumeInfo and authors exist
-  //         if (item.volumeInfo && item.volumeInfo.authors) {
-  //             // Add each author to the set
-  //             item.volumeInfo.authors.forEach(author => {
-  //                 authorNames.add(author);
-  //             });
-  //         }
-          
-  //         // Check if volumeInfo and categories exist
-  //         if (item.volumeInfo && item.volumeInfo.categories) {
-  //           // Add each Category to the set
-  //           item.volumeInfo.categories.forEach(category => {
-  //             categoryNames.add(category);
-  //           });
-  //         }
-
-  //     });
-      
-  //     // Convert the set to an array and log the unique author names
-  //     let uniqueAuthors = Array.from(authorNames);
-  //     console.log("Unique Author Names:");
-  //     console.log(uniqueAuthors);
-      
-  //     // Convert the set to an array an log the unique category names.
-  //     let uniqueCategories = Array.from(categoryNames);
-  //     console.log("Unique category names");
-  //     console.log(uniqueCategories);
-  //     //insertCategoriesToDB(uniqueCategories);
-      
-
-  //     let categorizedBooks = {
-  //         physical: [],
-  //         digital: []
-  //     };
-
-  //     books.forEach(book => {
-  //         const isEbook = book.saleInfo.isEbook;
-
-  //         if (isEbook) {
-  //             categorizedBooks.digital.push(book);
-  //         } else {
-  //             categorizedBooks.physical.push(book);
-  //         }
-  //     });
-
-  //     console.log("Categorized Books:");
-  //     console.log(categorizedBooks);
-
-      
-  //     const authors = uniqueAuthors;
-  //     const authorDataArray = [];
-
-  //     async function fetchAuthorData(authorName) {
-  //         const searchUrl = `https://openlibrary.org/search/authors.json?q=${encodeURIComponent(authorName)}`;
-
-  //         try {
-  //             const searchResponse = await fetch(searchUrl);
-  //             const searchResult = await searchResponse.json();
-
-  //             if (searchResult.docs && searchResult.docs.length > 0) {
-  //             const authorData = {
-  //               search: searchResult.docs[0],
-  //               name: authorName
-  //             }
-  //             authorDataArray.push(authorData);
-  //             //console.log(`Fetched data for ${authorName}:`, authorData);
-  //           } else {
-  //             console.log(`Author ${authorName} not found.`);
-  //           }
-  //         } catch (error) {
-  //             console.error(`Failed to fetch data for author ${authorName}: ${error.message}`);
-  //         }
-  //     }
-
-  //     async function fetchAllAuthors(authors) {
-  //         for (const author of authors) {
-  //             await fetchAuthorData(author);
-  //         }
-  //         console.log("All author data fetched and stored in array:", authorDataArray);
-  //         insertAuthorsToDB(authorDataArray);
-  //     }
-
-  //     document.getElementById("fetchAuthorsButton").addEventListener("click", () => {
-  //         fetchAllAuthors(authors);
-  //     });
-  // });
-
-
-
-
-
-
-// //------------------------------------------------------------------------
-
-// function insertAuthorsToDB(data) {
-//   console.log("HI from insert author");
-//   let api = `${apiStart}Authors`;
-
-//   data.forEach(author => {
-//     const authorData = {
-//       Name: author.name,
-//       TopWork: author.search.top_work,
-//       WorkCount: author.search.work_count,
-//       Key: author.search.key,
-//     }
-//     ajaxCall("POST", api, JSON.stringify(authorData), insertAuthorsToDBSCB, insertAuthorsToDBECB)
-//   })
-//   //alert("Inserted authors to the data base successfully");
-// }
-
-// function insertAuthorsToDBSCB(stats) {
-//   console.log(stats);
-// }
-
-// function insertAuthorsToDBECB(err) {
-//   console.log(err);
-//   //alert("Failed to insert the authors to the data base");
-// }
-
-// //------------------------------------------------------------------------
-
-// function insertCategoriesToDB(data) {
-//   console.log("Hi from insert category");
-//   let api = `${apiStart}Categories`;
-
-//   data.forEach(category => {
-//     const categoryData = {
-//       Name: category
-//     }
-//     ajaxCall("POST", api, JSON.stringify(categoryData), insertCategoriesToDBSCB, insertCategoriesToDBECB)
-//   })
-// }
-
-// function insertCategoriesToDBSCB(stats) {
-//   console.log(stats);
-// }
-
-// function insertCategoriesToDBECB (err) {
-//   console.log(err);
-// }
-
-// //------------------------------------------------------------------------
-
-// // function insertBooksToDB(data) {
-// //   console.log("Hi from insert book");
-
-// //   let api = `${apiStart}Books`;
-// //   data.forEach(book => {
-    
-// //     const bookData = {
-// //       Id: 0,
-// //       Title: book.volumeInfo.title,
-// //       Price: getRandomInt(25, 200),
-// //       Authors: book.volumeInfo.authors,
-// //       Publisher: book.volumeInfo.publisher,
-// //       PublishedDate: book.volumeInfo.description,
-// //       Description: book.volumeInfo.description,
-// //       PageCount: book.volumeInfo.pageCount,
-// //       Categories: book.volumeInfo.categories,
-// //       AverageRating: parseInt(book.volumeInfo.averageRating),
-// //       RatingsCount: book.volumeInfo.ratingsCount,
-// //       SmallThumbnailUrl: book.volumeInfo.imageLinks.smallThumbnail,
-// //       ThumbnailUrl: book.volumeInfo.imageLinks.thumbnail,
-// //       Language: book.volumeInfo.language,
-// //       PreviewLink: book.volumeInfo.previewLink,
-// //       InfoLink: book.volumeInfo.infoLink,
-// //       CanonicalVolumeLink: book.volumeInfo.canonicalVolumeLink,
-// //       IsEbook: book.saleInfo.isEbook,
-// //       Embeddable: book.accessInfo.embeddable,
-// //       EpubIsAvailable: book.accessInfo.epub.isAvailable,
-// //       EpubDownloadLink: book.accessInfo.epub.downloadLink,
-// //       PdfIsAvailable: book.accessInfo.pdf.isAvailable,
-// //       PdfDownloadLink: book.accessInfo.pdf.downloadLink,
-// //       WebReaderLink: book.accessInfo.webReaderLink,
-// //       TextReading: book.volumeInfo.readingModes.text,
-// //       PhotoReading: book.volumeInfo.readingModes.photo,
-// //       GoogleBooksId: book.id,
-// //       Etag: book.etag,
-// //       SelfLink: book.SelfLink
-// //     }
-// //     ajaxCall("POST", api, JSON.stringify(bookData), insertBooksToDBSCB, insertBooksToDBECB)
-
-// //   });
-// // }
-
-
-// function insertBooksToDB(data) {
-//   console.log("Hi from insert book");
-
-//   let api = `${apiStart}Books`;
-//   let delay = 1000; // Delay in milliseconds (e.g., 1000 ms = 1 second)
-  
-//   function sendAjaxCall(index) {
-//     if (index >= data.length) {
-//       return; // Exit when all data has been processed
-//     }
-
-//     const book = data[index];
-//     const bookData = {
-//       Id: 0,
-//       Title: book.volumeInfo.title,
-//       Price: getRandomInt(25, 200),
-//       Authors: book.volumeInfo.authors,
-//       Publisher: book.volumeInfo.publisher,
-//       PublishedDate: book.volumeInfo.publishedDate,
-//       Description: book.volumeInfo.description,
-//       PageCount: book.volumeInfo.pageCount,
-//       Categories: book.volumeInfo.categories,
-//       AverageRating: 0,
-//       RatingsCount: 0,
-//       SmallThumbnailUrl: book.volumeInfo.imageLinks.smallThumbnail,
-//       ThumbnailUrl: book.volumeInfo.imageLinks.thumbnail,
-//       Language: book.volumeInfo.language,
-//       PreviewLink: book.volumeInfo.previewLink,
-//       InfoLink: book.volumeInfo.infoLink,
-//       CanonicalVolumeLink: book.volumeInfo.canonicalVolumeLink,
-//       IsEbook: book.saleInfo.isEbook,
-//       Embeddable: book.accessInfo.embeddable,
-//       EpubIsAvailable: book.accessInfo.epub.isAvailable,
-//       EpubDownloadLink: book.accessInfo.epub.downloadLink,
-//       PdfIsAvailable: book.accessInfo.pdf.isAvailable,
-//       PdfDownloadLink: book.accessInfo.pdf.downloadLink,
-//       WebReaderLink: book.accessInfo.webReaderLink,
-//       TextReading: book.volumeInfo.readingModes.text,
-//       PhotoReading: book.volumeInfo.readingModes.photo,
-//       GoogleBooksId: book.id,
-//       Etag: book.etag,
-//       SelfLink: book.selfLink,
-//       IsActive: true,
-//       IsAvailable: true,
-//       NumOfPrints: getRandomInt(1, 4)
-//     };
-
-//     ajaxCall("POST", api, JSON.stringify(bookData), insertBooksToDBSCB, insertBooksToDBECB);
-
-//     // Schedule the next call
-//     setTimeout(() => sendAjaxCall(index + 1), delay);
-//   }
-
-//   // Start processing from the first item
-//   sendAjaxCall(0);
-// }
-
-// function insertBooksToDBSCB(stats) {
-//   console.log(stats);
-// }
-
-// function insertBooksToDBECB (err) {
-//   console.log(err);
-// }
-
-// function getRandomInt(min, max) {
-//   min = Math.ceil(min);
-//   max = Math.floor(max);
-//   return Math.floor(Math.random() * (max - min + 1)) + min;
-// }

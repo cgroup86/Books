@@ -1,20 +1,28 @@
-CREATE PROCEDURE SP_UpdateBookStatus
+alter PROCEDURE SP_UpdateBookStatus
     @UserId INT,
     @BookId INT,
-    @NewStatus BIT
+    @NewStatus BIT,
+	@IsEbook bit
 AS
 BEGIN
-    -- Update or insert the book status for the user
     IF EXISTS (SELECT 1 FROM PersonalLibrary WHERE UserId = @UserId AND BookId = @BookId)
     BEGIN
-        -- Update existing entry
         UPDATE PersonalLibrary
         SET [Status] = @NewStatus
         WHERE UserId = @UserId AND BookId = @BookId;
-		select 1 as Result
+
+		IF @NewStatus = 0 AND @IsEbook = 0
+		BEGIN
+        DELETE FROM buySell
+        WHERE SellerId = @UserId AND BookId = @BookId;
+		END
     END
-	ELSE 
-	BEGIN
-		select 0 as Result
-	END
+	IF @@ROWCOUNT > 0
+    BEGIN
+        SELECT 1 AS Result;
+    END
+    ELSE
+    BEGIN
+        SELECT 0 AS Result;
+    END
 END

@@ -1428,7 +1428,7 @@ public class DBservices
     //--------------------------------------------------------------------------------------------------
     // This method is changing the attribute of the variable isActive
     //--------------------------------------------------------------------------------------------------
-    public void UpdateBookStatus(int userId, int bookId, bool newStatus)
+    public void UpdateBookStatus(int userId, int bookId, bool newStatus, bool isEbook)
     {
 
         SqlConnection con;
@@ -1444,7 +1444,7 @@ public class DBservices
             throw (ex);
         }
 
-        cmd = CreateCommandWithStoredProcedureUpdateBookStatus("SP_UpdateBookStatus", con, userId, bookId, newStatus);             // create the command
+        cmd = CreateCommandWithStoredProcedureUpdateBookStatus("SP_UpdateBookStatus", con, userId, bookId, newStatus, isEbook);             // create the command
 
         try
         {
@@ -1480,7 +1480,7 @@ public class DBservices
     //---------------------------------------------------------------------------------
     // Create the SqlCommand using a stored procedure
     //---------------------------------------------------------------------------------
-    private SqlCommand CreateCommandWithStoredProcedureUpdateBookStatus(String spName, SqlConnection con, int userId, int bookId, bool newStatus)
+    private SqlCommand CreateCommandWithStoredProcedureUpdateBookStatus(String spName, SqlConnection con, int userId, int bookId, bool newStatus, bool isEbook)
     {
 
         SqlCommand cmd = new SqlCommand(); // create the command object
@@ -1495,7 +1495,8 @@ public class DBservices
 
         cmd.Parameters.AddWithValue("@UserId", userId);
         cmd.Parameters.AddWithValue("@BookId", bookId);
-        cmd.Parameters.AddWithValue("@NewStatus", newStatus); 
+        cmd.Parameters.AddWithValue("@NewStatus", newStatus);
+        cmd.Parameters.AddWithValue("@IsEbook", isEbook);
         return cmd;
     }
 
@@ -1540,7 +1541,7 @@ public class DBservices
                     status = bool.Parse(dataReader["status"].ToString()),
                     IsPurchased = bool.Parse(dataReader["IsPurchased"].ToString()),
                     isActive = bool.Parse(dataReader["isActive"].ToString()),
-                });               
+                });
             }
             return listObj;
         }
@@ -2193,6 +2194,7 @@ public class DBservices
                     Id = Convert.ToInt32(dataReader["BookId"]),
                     Title = dataReader["BookTitle"].ToString(),
                     Price = Convert.ToInt32(dataReader["Price"]),
+                    PreviewLink = dataReader["PreviewLink"].ToString(),
                     SmallThumbnailUrl = dataReader["SmallThumbnailUrl"].ToString(),
                     IsEbook = bool.Parse(dataReader["IsEbook"].ToString()),
                     IsAvailable = bool.Parse(dataReader["IsAvailable"].ToString()),
@@ -2467,13 +2469,13 @@ public class DBservices
     //---------------------------------------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureAddRemove(String spName, SqlConnection con, int sellerId, int buyerId, int bookId)
     {
-        SqlCommand cmd = new SqlCommand(); 
+        SqlCommand cmd = new SqlCommand();
 
-        cmd.Connection = con;   
+        cmd.Connection = con;
 
-        cmd.CommandText = spName;     
+        cmd.CommandText = spName;
 
-        cmd.CommandTimeout = 10;           
+        cmd.CommandTimeout = 10;
 
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -2528,13 +2530,13 @@ public class DBservices
     //---------------------------------------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureAccept(String spName, SqlConnection con, int sellerId, int buyerId, int bookId)
     {
-        SqlCommand cmd = new SqlCommand(); 
+        SqlCommand cmd = new SqlCommand();
 
-        cmd.Connection = con;            
+        cmd.Connection = con;
 
-        cmd.CommandText = spName;   
+        cmd.CommandText = spName;
 
-        cmd.CommandTimeout = 10;          
+        cmd.CommandTimeout = 10;
 
         cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
@@ -2596,7 +2598,7 @@ public class DBservices
             }
         }
 
-        
+
     }
 
     //---------------------------------------------------------------------------------
@@ -2604,15 +2606,15 @@ public class DBservices
     //---------------------------------------------------------------------------------
     private SqlCommand CreateCommandWithStoredProcedureGetPurchased(String spName, SqlConnection con, int userId)
     {
-        SqlCommand cmd = new SqlCommand(); 
+        SqlCommand cmd = new SqlCommand();
 
-        cmd.Connection = con;      
+        cmd.Connection = con;
 
-        cmd.CommandText = spName;    
+        cmd.CommandText = spName;
 
-        cmd.CommandTimeout = 10;         
+        cmd.CommandTimeout = 10;
 
-        cmd.CommandType = System.Data.CommandType.StoredProcedure; 
+        cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
         cmd.Parameters.AddWithValue("@userID", userId);
         return cmd;
@@ -2649,7 +2651,8 @@ public class DBservices
                 {
                     Id = Convert.ToInt32(reader["BookId"]),
                     Title = reader["BookTitle"].ToString(),
-                    BuyerId = Convert.ToInt32(reader["buyerId"])
+                    BuyerId = Convert.ToInt32(reader["buyerId"]),
+                    BuyerName = reader["BookTitle"].ToString()
                 });
             }
 
@@ -2688,4 +2691,211 @@ public class DBservices
         cmd.Parameters.AddWithValue("@sellerId", sellerId);
         return cmd;
     }
+
+
+    //--------------------------------------------------------------------------------------------------
+    // This method logs the user in
+    //--------------------------------------------------------------------------------------------------
+    public void RejectRequestToBuyProcedure(int sellerId, int buyerId, int bookId)
+    {
+
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureRejectRequestToBuyProcedure("SP_RejectRequestToBuyProcedure", con, sellerId, buyerId, bookId); // create the command
+
+        try
+        {
+            cmd.ExecuteNonQuery();
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureRejectRequestToBuyProcedure(String spName, SqlConnection con, int sellerId, int buyerId, int bookId)
+    {
+
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        cmd.Parameters.AddWithValue("@sellerId", sellerId);
+        cmd.Parameters.AddWithValue("@buyerId", buyerId);
+        cmd.Parameters.AddWithValue("@bookId", bookId);
+
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets all requested to buy books by me
+    //--------------------------------------------------------------------------------------------------
+    public List<object> GetMyRequests(int buyerId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB"); // create the connection
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+
+        cmd = CreateCommandWithStoredProcedureGetMyRequests("SP_MyRequests", con, buyerId); // create the command
+
+        try
+        {
+            SqlDataReader reader = cmd.ExecuteReader(); // execute the command
+            List<object> objList = new List<object>();
+
+            while (reader.Read())
+            {
+                objList.Add(new
+                {
+                    SellerId = Convert.ToInt32(reader["sellerId"]),
+                    sellerName = reader["name"].ToString(),
+                    BookId = Convert.ToInt32(reader["BookId"]),
+                    BookTitle = reader["BookTitle"].ToString()
+                });
+            }
+
+            return objList;
+        }
+        catch (Exception ex)
+        {
+            // write to log
+            throw (ex);
+        }
+        finally
+        {
+            if (con != null)
+            {
+                // close the db connection
+                con.Close();
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------------------
+    // Create the SqlCommand using a stored procedure for GetRequestedBooksByBuyer
+    //---------------------------------------------------------------------------------
+    private SqlCommand CreateCommandWithStoredProcedureGetMyRequests(String spName, SqlConnection con, int buyerId)
+    {
+        SqlCommand cmd = new SqlCommand(); // create the command object
+
+        cmd.Connection = con;              // assign the connection to the command object
+
+        cmd.CommandText = spName;      // can be Select, Insert, Update, Delete 
+
+        cmd.CommandTimeout = 10;           // Time to wait for the execution' The default is 30 seconds
+
+        cmd.CommandType = System.Data.CommandType.StoredProcedure; // the type of the command, can also be text
+
+        cmd.Parameters.AddWithValue("@buyerId", buyerId);
+        return cmd;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    // This method gets who owns the book
+    //--------------------------------------------------------------------------------------------------
+
+    public List<object> GetWhoOwnTheBook(int bookId)
+    {
+        SqlConnection con;
+        SqlCommand cmd;
+
+        try
+        {
+            con = connect("myProjDB");
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+
+        cmd = new SqlCommand("SP_GetWhoOwnTheBook", con);
+        cmd.CommandType = CommandType.StoredProcedure;
+
+        cmd.Parameters.AddWithValue("@bookId", bookId);
+
+        try
+        {
+            List<object> objList = new List<object>();
+            SqlDataReader dataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
+            if (dataReader.Read())
+            {
+                int sellerId = Convert.ToInt32(dataReader["SellerId"]);
+
+                if (sellerId == -1)
+                {
+                    return new List<object>
+                    {
+                        new
+                        {
+                            SellerId = -1,
+                            Name = "",
+                        }
+                    };
+                }
+                else
+                {
+                    objList.Add(new
+                    {
+                        SellerId = sellerId,
+                        Name = dataReader["name"].ToString(),
+                    });
+
+                }
+            }
+            return objList;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            if (con != null)
+            {
+                con.Close();
+            }
+        }
+    }
+
+
 }

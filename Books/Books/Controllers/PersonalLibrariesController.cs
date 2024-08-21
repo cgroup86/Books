@@ -25,12 +25,12 @@ namespace Books.Controllers
         }
 
 
-        [HttpPut("UpdateBookStatus/UserId/{userId}/BookId/{bookId}/NewStatus/{newStatus}")]
-        public IActionResult UpdateBookStatus(int userId, int bookId, bool newStatus)
+        [HttpPut("UpdateBookStatus/UserId/{userId}/BookId/{bookId}/NewStatus/{newStatus}/IsEbook/{isEbook}")]
+        public IActionResult UpdateBookStatus(int userId, int bookId, bool newStatus, bool isEbook)
         {
             try
             {
-                PersonalLibrary.UpdateBookStatus(userId, bookId, newStatus);
+                PersonalLibrary.UpdateBookStatus(userId, bookId, newStatus, isEbook);
                 return Ok(new { message = "Book with id: " + bookId + " status has been updated successfully" });
             }
             catch (ArgumentException ex)
@@ -150,36 +150,48 @@ namespace Books.Controllers
                 return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
             }
         }
-        //// GET: api/<PersonalLibrariesController>
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}-------
 
-        //// GET api/<PersonalLibrariesController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        [HttpPut("RejectRequestToBuyProcedure/sellerId/{sellerId}/buyerId/{buyerId}/bookId/{bookId}")]
+        public IActionResult RejectRequestToBuyProcedure(int sellerId, int buyerId, int bookId)
+        {
+            try
+            {
+                PersonalLibrary.RejectRequestToBuyProcedure(sellerId, buyerId, bookId);
+                return Ok(1);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
+        }
 
-        //// POST api/<PersonalLibrariesController>
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
 
-        //// PUT api/<PersonalLibrariesController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        [HttpGet("GetMyRequests/buyerId/{buyerId}")]
+        public IActionResult GetMyRequests(int buyerId)
+        {
+            try
+            {
+                var obj = PersonalLibrary.GetMyRequests(buyerId);
+                return Ok(obj);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
+        }
 
-        //// DELETE api/<PersonalLibrariesController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        [HttpGet("GetWhoOwnTheBook/bookId/{bookId}")]
+        public IActionResult GetWhoOwnTheBook(int bookId)
+        {
+            try
+            {
+                var obj = PersonalLibrary.GetWhoOwnTheBook(bookId);
+                return Ok(obj);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An unexpected error occurred: " + ex.Message });
+            }
+        }
     }
 }

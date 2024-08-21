@@ -7,7 +7,7 @@
         bool status; // "ToRead" = false or "HaveRead" = true
         bool isPurchased; // true = "purchased"
 
-        
+
 
         public PersonalLibrary() { }
 
@@ -35,16 +35,16 @@
             {
                 return false;
             }
-         
+
         }
 
-        public static void UpdateBookStatus(int userId, int bookId, bool newStatus)
+        public static void UpdateBookStatus(int userId, int bookId, bool newStatus, bool isEbook)
         {
 
             try
             {
                 DBservices dbs = new DBservices();
-                dbs.UpdateBookStatus(userId, bookId, newStatus);
+                dbs.UpdateBookStatus(userId, bookId, newStatus, isEbook);
             }
             catch (ArgumentException ex)
             {
@@ -147,6 +147,44 @@
                 throw new Exception("Unexpected error occurred: " + ex.Message, ex);
             }
         }
-        
+
+        public static void RejectRequestToBuyProcedure(int sellerId, int buyerId, int bookId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                dbs.RejectRequestToBuyProcedure(sellerId, buyerId, bookId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+
+        public static List<object> GetMyRequests(int buyerId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.GetMyRequests(buyerId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
+
+        public static List<object> GetWhoOwnTheBook(int bookId)
+        {
+            try
+            {
+                DBservices dbs = new DBservices();
+                return dbs.GetWhoOwnTheBook(bookId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occurred: " + ex.Message, ex);
+            }
+        }
     }
 }

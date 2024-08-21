@@ -5,15 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Application</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../Css/header.css">
+   
     <link rel="stylesheet" href="../Css/quiz.css">
+    <link href="../Css/PrevNav.css" rel="stylesheet" />
     <style>
-      
     </style>
 </head>
 <body>
-    <header id="header-container"></header>
+    <div style=" display:flex; justify-content:space-between; flex-direction:row;">
+        <h1>Hello</h1>
+        <a class="goBackButton" href="index.html">Go back</a>
+    </div>
     
+
     <div class="container quiz-container" id="homePage">
         <h1 class="text-center">Quiz Application</h1>
         <button id="startQuiz" class="btn btn-primary btn-lg">Start Quiz</button>
@@ -22,15 +26,15 @@
     </div>
 
     <div class="container quiz-container d-none" id="quizPage">
-      <h1 class="text-center">Quiz</h1>
-      <div id="timer" class="timer text-center">Time: 59s</div>
-      <div id="questionContainer" class="question-container">
-          
-      </div>
-      <button id="submitAnswer" class="btn btn-primary btn-submit">Submit</button>      
-      <button id="exitQuiz" class="btn btn-danger btn-lg mt-3">Exit Quiz</button> 
+        <h1 class="text-center">Quiz</h1>
+        <div id="timer" class="timer text-center">Time: 59s</div>
+        <div id="questionContainer" class="question-container">
+
+        </div>
+        <button id="submitAnswer" class="btn btn-primary btn-submit">Submit</button>
+        <button id="exitQuiz" class="btn btn-danger btn-lg mt-3">Exit Quiz</button>
     </div>
-  
+
 
     <div class="container quiz-container d-none" id="scorePage">
         <h1 class="text-center">Your Score</h1>
@@ -41,29 +45,28 @@
     </div>
 
     <div class="modal fade" id="showScoresModal" tabindex="-1" aria-labelledby="showScoresModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="showScoresModalLabel">User and Top Scores</h5>
-            <button type="button" class="close" id="closeShowScoresBtn">&times;</button>
-          </div>
-          <div class="modal-body">
-            <div id="showUserScores">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="showScoresModalLabel">User and Top Scores</h5>
+                    <button type="button" class="close" id="closeShowScoresBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="showUserScores">
+                    </div>
+                    <h6>Top Scores</h6>
+                    <ul id="showTopScoresList">
+                    </ul>
+                </div>
             </div>
-            <h6>Top Scores</h6>
-            <ul id="showTopScoresList">
-            </ul>
-          </div>
         </div>
-      </div>
     </div>
-    
-    
+
+
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="../Js/ajaxCalls.js"></script>
-    <script src="../Js/headerJs.js"></script>
     <script src="../Js/quiz.js"></script>
-  
+
 </body>
 </html>

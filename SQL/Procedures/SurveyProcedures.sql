@@ -110,7 +110,7 @@ go
 
 
 --  what is the number of the pages for this book
-create PROCEDURE spGenerateQuestion4
+alter PROCEDURE spGenerateQuestion4
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -123,7 +123,7 @@ BEGIN
 	select top 1 @Book = [BookTitle], @Answer = [pageNum] from [Books] where [BookTitle] != '' and [pageNum] != 0 order by  NEWID()
 
 	-- return the results ther first one is the correct one always
-	 select 'What is the price of the book ' + @Book +'?' as [Question], @Answer as [CorrectAnswer]
+	 select 'What is the number of the pages for this book ' + @Book +'?' as [Question], @Answer as [CorrectAnswer]
 	 select top 3 [pageNum] as [WrongAnswers]  from [Books] where [BookTitle] != '' and [pageNum] != 0 and [BookTitle] != @Book order by  NEWID()
 
 END

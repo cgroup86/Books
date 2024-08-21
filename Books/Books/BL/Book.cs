@@ -63,7 +63,7 @@ namespace Books.BL
         public string WebReaderLink { get => webReaderLink; set => webReaderLink = value; }
         public string GoogleBooksId { get => googleBooksId; set => googleBooksId = value; }
         public bool? IsActive { get => isActive; set => isActive = value; }
-        public bool IsAvailable { get => isAvailable ; set => isAvailable = value; }
+        public bool IsAvailable { get => isAvailable; set => isAvailable = value; }
         public int NumOfPrints { get => numOfPrints; set => numOfPrints = value; }
 
         public void EnsureDefaults()

@@ -1,6 +1,6 @@
-const apiStart = 'https://localhost:7291/api';
-let currentPage = 1; // Start from the first page
-const pageSize = 100; // Number of authors per page
+const apiStart = 'https://proj.ruppin.ac.il/cgroup86/test2/tar1/api';
+let currentPage = 1;
+const pageSize = 100; 
 $(document).ready(function () {
 
     getFromServer();
@@ -8,23 +8,16 @@ $(document).ready(function () {
 
 function getFromServer() {
 
-    //  API URLs
     const booksApi = `${apiStart}/Books/get10BooksPerPage/${currentPage}/${pageSize}`;
     const authorsApi = `${apiStart}/Authors/get10AuthorsPerPage/${currentPage}/${pageSize}`;
     const usersApi = `${apiStart}/Users`;
-    // Fetch Books 
     ajaxCall("GET", booksApi, "", function (books) {
         renderBooksTable('#booksTable', books, "Books");
     }, getBooksECB);
 
-
-
-    //// Fetch Authors
     ajaxCall("GET", authorsApi, "", function (authors) {
         renderAuthorsTable('#authorsTable', authors, "Authors");
     }, getBooksECB);
-
-    //// Fetch Books Purchased
     ajaxCall("GET", usersApi, "", function (users) {
         renderUsersTable('#usersTable', users, "Users");
     }, getBooksECB);
@@ -39,25 +32,7 @@ function renderBooksTable(tableId, tableData, title) {
         if (!$.fn.DataTable.isDataTable(tableId)) {
             $(tableId).DataTable({
                 data: tableData,
-                drawCallback: function () {
-                    var table = this.api();
-                    var pageInfo = table.page.info();
-                    var pages = pageInfo.pages;
-
-                    $('.paginate_button.next:not(.disabled)', table.table().container())
-                        .on('click', function () {
-                            currentPage++;
-                            getFromServer(currentPage, pageSize);
-                        });
-
-                    $('.paginate_button.previous:not(.disabled)', table.table().container())
-                        .on('click', function () {
-                            if (currentPage > 1) {
-                                currentPage--;
-                                getFromServer(currentPage, pageSize);
-                            }
-                        });
-                },
+           
                 columns: [
 
                     {
@@ -217,35 +192,6 @@ function renderAuthorsTable(tableId, tableData, title) {
         if (!$.fn.DataTable.isDataTable(tableId)) {
             $(tableId).DataTable({
                 data: tableData,
-                drawCallback: function () {
-                    var table = this.api();
-                    var pageInfo = table.page.info();
-
-                    $('.paginate_button.next:not(.disabled)', table.table().container())
-                        .on('click', function () {
-                            var nextPageIndex = pageInfo.page;
-                            currentPage++;
-                            $('#numOfPages').text("Page " + currentPage);
-                            getFromServer(currentPage, pageSize);
-                        });
-
-                    // Event handler for page number buttons
-                    $('.paginate_button:not(.next, .previous)', table.table().container())
-                        .on('click', function () {
-                            var clickedPageIndex = $(this).text() - 1; // Adjust to zero-based index
-
-                        });
-
-                    // Event handler for the "Previous" button
-                    $('.paginate_button.previous:not(.disabled)', table.table().container())
-                        .on('click', function () {
-                            if (currentPage > 1) {
-                                currentPage--;
-                                $('#numOfPages').text("Page " + currentPage);
-                                getFromServer(currentPage, pageSize);
-                            }
-                        });
-                },
                 columns: [
                     {
                         data: "image",
@@ -321,33 +267,6 @@ function renderUsersTable(tableId, tableData, title) {
         if (!$.fn.DataTable.isDataTable(tableId)) {
             $(tableId).DataTable({
                 data: tableData,
-                drawCallback: function () {
-                    var table = this.api();
-                    var pageInfo = table.page.info();
-
-                    $('.paginate_button.next:not(.disabled)', table.table().container())
-                        .on('click', function () {
-                            var nextPageIndex = pageInfo.page;
-                            currentPage++;
-                            $('#numOfPages').text("Page " + currentPage);
-                            getFromServer(currentPage, pageSize);
-                        });
-
-                    $('.paginate_button:not(.next, .previous)', table.table().container())
-                        .on('click', function () {
-                            var clickedPageIndex = $(this).text() - 1; 
-
-                        });
-
-                    $('.paginate_button.previous:not(.disabled)', table.table().container())
-                        .on('click', function () {
-                            if (currentPage > 1) {
-                                currentPage--;
-                                $('#numOfPages').text("Page " + currentPage);
-                                getFromServer(currentPage, pageSize);
-                            }
-                        });
-                },
                 columns: [
                     {
                         data: "id",

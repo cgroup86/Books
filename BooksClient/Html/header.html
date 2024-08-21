@@ -1,14 +1,25 @@
-﻿<div class="container">
-    <div class="row align-items-center">
-        <div class="col-6">
+﻿<div >
+    <div style=" display:flex; justify-content:space-between; flex-direction:row; flex-wrap:wrap;">
+        <div  style="display: flex; justify-content: space-between; flex-direction: row; align-items: center; gap: 10px; padding: 10px; font-size: 30px; cursor:pointer;">
+            <i id="navBarButton" class="fa-solid fa-xmark"></i>
             <h1 class="nav-title">My Library</h1>
+            <a href="additions.html">Additions</a>
         </div>
-  
-        <div class="col-6 text-end">
+        <div id="pagesNav">
             <nav>
-              <button id="loginBtn" class="btn btn-primary me-2">Login</button>
-              <button id="registerBtn" class="btn btn-secondary">Register</button>
-              <button id="logoutBtn" class="btn btn-danger" style="display: none;">Logout</button>
+                <a href="index.html">Home</a> 
+                <a href="AdminPage.html">Home</a>  <span class="brake"> | </span>
+                <a href="AuthorsPage.html">Authers</a> <span class="brake"> | </span>
+                <a href="BuyAndSellPage.html">BuyOrSell</a> <span class="brake"> | </span>
+                <a href="myLibrary.html">Library</a> <span class="brake"> | </span>
+                <a href="userQuiz.html">Quiz</a>
+            </nav>
+        </div>
+        <div style=" display:flex; justify-content:space-between; flex-direction:row; align-items:center; padding:2px;">
+            <nav>
+                <button id="loginBtn" class="btn btn-primary me-2">Login</button>
+                <button id="registerBtn" class="btn btn-secondary">Register</button>
+                <button id="logoutBtn" class="btn btn-danger" style="display: none;">Logout</button>
             </nav>
         </div>
     </div>

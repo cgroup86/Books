@@ -13,26 +13,26 @@ $(document).ready(function() {
 
 function getFromServer() {
   console.log("Hi from getFromServer");
-
-  const userId = 1; 
-  const booksToReadApi = `https://localhost:7291/api/PersonalLibraries/BooksToRead/UserId/${userId}`;
-  const booksReadApi = `https://localhost:7291/api/PersonalLibraries/BooksRead/UserId/${userId}`;
-  const booksPurchasedApi = `https://localhost:7291/api/PersonalLibraries/BooksPurchased/UserId/${userId}`;
+    const user = JSON.parse(sessionStorage.getItem('userData'));
+    const userId = user.userId;
+    const booksToReadApi = `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/PersonalLibraries/BooksToRead/UserId/${userId}`;
+    const booksReadApi = `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/PersonalLibraries/BooksRead/UserId/${userId}`;
+    const booksPurchasedApi = `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/PersonalLibraries/BooksPurchased/UserId/${userId}`;
   
   ajaxCall("GET", booksToReadApi, "", function(booksToRead) {
-      console.log("Books To Read:", booksToRead); 
+      //console.log("Books To Read:", booksToRead); 
       booksToReadData = booksToRead;
       renderTable('#booksToReadTable', booksToRead, "Books to Read");
   }, getBooksECB);
   
   ajaxCall("GET", booksReadApi, "", function(booksRead) {
-      console.log("Books Read:", booksRead); 
+      //console.log("Books Read:", booksRead); 
       booksReadData = booksRead;
       renderTable('#booksReadTable', booksRead, "Books Read");
   }, getBooksECB);
   
   ajaxCall("GET", booksPurchasedApi, "", function(booksPurchased) {
-      console.log("Books Purchased:", booksPurchased); 
+      //console.log("Books Purchased:", booksPurchased); 
       booksPurchasedData = booksPurchased;
       renderTable('#booksPurchasedTable', booksPurchased, "Books Purchased");
   }, getBooksECB);
@@ -79,9 +79,18 @@ function renderTable(tableId, tableData, title) {
                     let dataBook = "data-bookId='" + row.bookId + "'";
                     let status = row.status ? 'HaveRead' : 'ToRead';
                     let toggleStatus = row.status ? 'Mark as ToRead' : 'Mark as HaveRead';
-                    return `<button type='button' class='statusBtn btn btn-primary' ${dataBook} data-status='${row.status}'>${toggleStatus}</button>`;
+                    return `<button type='button' class='statusBtn btn btn-primary' ${dataBook} data-status='${row.status}' data-isEbook='${row.isEbook}'>${toggleStatus}</button>`;
                   },
                   title: "Actions"
+              },
+              {
+                  render: function (data, type, row, meta) {
+                      if (row.isEbook && row.embeddable) {
+                          return `<a href='explore.html?bookId=${row.googleBooksId}' class='btn btn-info'>Explore</a>`;
+                      }
+                      return 'N/A';
+                  },
+                  title: "Explore"
               }
           ],
       });
@@ -100,13 +109,16 @@ function buttonEvents(tableId) {
     let bookId = $(this).data('bookid');
     let currentStatus = $(this).data('status') === 'true';
     let newStatus = !currentStatus;
-    
-    updateBookStatus(bookId, newStatus);
+    let isEbook = $(this).data('isEbook');
+
+    updateBookStatus(bookId, newStatus, isEbook);
   });
 }
 
 function updateBookStatus(bookId, newStatus) {
-  const apiUrl = `https://localhost:7291/api/PersonalLibraries/UpdateBookStatus/UserId/1/BookId/${bookId}/NewStatus/${newStatus}`;
+    const user = JSON.parse(sessionStorage.getItem('userData'));
+    const userId = user.userId;
+    const apiUrl = `https://proj.ruppin.ac.il/cgroup86/test2/tar1/api/PersonalLibraries/UpdateBookStatus/UserId/${userId}/BookId/${bookId}/NewStatus/${newStatus}/IsEbook/${isEbook}`;
 
   $.ajax({
     url: apiUrl,

@@ -48,7 +48,7 @@ namespace Books.Controllers
         //POST api/<ValuesController>
         [HttpPost]
         public IActionResult Post([FromBody] Author author)
-        {       
+        {
             try
             {
                 var insert = author.Insert();

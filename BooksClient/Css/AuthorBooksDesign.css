@@ -5,75 +5,56 @@
     background-size: cover;
 }
 
+
 * {
     margin: 0;
     padding: 0;
 }
 
-/* Container for heading and book cards */
-.container {
+.main-container {
     display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center items horizontally */
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
     padding: 10px;
+    justify-content: space-evenly;
 }
 
-/* Center the heading */
-.page-title {
-    text-align: center; /* Center text horizontally */
-    width: 100%; /* Ensure it takes the full width of the container */
-    margin-bottom: 20px; /* Space below the heading */
-}
-
-/* Flex container for book cards */
-.book-cards-container {
-    display: flex;
-    flex-wrap: wrap; /* Allow items to wrap to the next line if they don't fit */
-    gap: 10px; /* Space between the cards */
-    justify-content: center; /* Center the cards horizontally */
-    width: 100%; /* Ensure it takes the full width of the container */
-}
-
-/* Style for individual book cards */
 .book-card {
+    margin-top: 10px;
     border-radius: 10px;
     height: 500px;
     width: 240px;
     padding: 10px;
     display: flex;
-    flex-direction: column; /* Keep content inside the card in a column layout */
+    flex-direction: column;
     justify-content: space-between;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: #aaa;
+    background-color: #fff;
 }
 
-    /* Style for the image inside book card */
     .book-card img {
         max-width: 100%;
         height: 60%;
         border-radius: 10px;
     }
 
-    /* Title styling */
     .book-card h3 {
         text-align: center;
         margin: 10px 0;
         font-size: 20px;
     }
 
-    /* Link inside the title */
     .book-card a {
         text-decoration: none;
         color: #333;
     }
 
-    /* Price number */
     .book-card .price-number {
         text-align: center;
         margin: 10px 0;
     }
 
-    /* Button styling */
     .book-card button {
         background-color: orange;
         border: none;
@@ -85,20 +66,25 @@
         transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
     }
 
-/* Button hover state */
 .add-book-button:hover {
     background-color: white;
     color: orange;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Center pagination controls */
 .pagination-controls {
     text-align: center;
     margin-top: 20px;
 }
 
-/* Style for section titles */
+.section-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: bold;
+}
+
 .section-title {
     text-align: center;
     font-size: 1.5rem;
@@ -107,9 +93,16 @@
     margin-top: 20px;
 }
 
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-    .modal-content {
-        width: 90%;
-    }
+.book-card h3 {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
